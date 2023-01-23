@@ -124,3 +124,11 @@ class Settings:
         """
         return self._settings
     
+    def reset(self):
+        """ 
+        Reset all settings in settings file
+        - Overrite settings file with default settings 
+        """
+        self._settings = dict(self.default_settings)
+        self._save_settings(self._settings)
+    
