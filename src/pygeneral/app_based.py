@@ -15,49 +15,52 @@ class Settings:
     def __init__(
         self,
         default_settings: dict[str, Any], 
-        settings_directory: str, 
+        settings_directory: str | None = None,
         settings_file_name: str = 'settings.json',
-        hard_refresh: bool = False
+        hard_fetch: bool = False
     ):
         """ 
         Class to handle all settings related aspect for an app
 
         Args:
         - `default_settings`: Default settings to be used in case any setting is missing
-        - `settings_directory`: Directory where settings file would be stored
+        - `settings_directory`: Directory where settings file would be stored (default: current working directory)
         - `settings_file_name`: Name of the settings file
-        - `hard_refresh`: If `True`, settings would be refreshed on every `get` and `update` method from file (it's not really necessary)
+        - `hard_fetch`: For fetching settings from settings file on every `get` and `update` method
+            - If setting file is modified, those changes will be fetched in app
+            - In other words, settings from settings file would be priortised over settings in app memory
+            - Keep it False, if you don't want this behavior
         """
         # Args
         self.default_settings = default_settings
-        self.settings_directory = settings_directory
+        self.settings_directory = settings_directory if settings_directory else os.getcwd()
         self.settings_file_name = settings_file_name
-        self.hard_refresh = hard_refresh
+        self.hard_fetch = hard_fetch                                                 # for hard-fetching settings from file (see docstring)
         
         # Init
-        self.settings_file_path = self.get_settings_file_path()
-        self.settings = self._load_settings()
+        self.settings_file_path = self._get_settings_file_path()                     # path of settings file
+        self._settings = self._load_settings()                                       # all settings
 
     @staticmethod
-    def _D_refresh_settings(func: Callable):
+    def _hard_fetch(func: Callable):
         """ 
-        Decorator to load settings before running decorated function 
+        Decorator to load settings from settings file before running decorated function 
         """
         def wrapper(self, *args, **kwargs):
-            if self.hard_refresh:
-                self.settings = self._load_settings()
+            if self.hard_fetch:
+                self._settings = self._load_settings()
             return func(self, *args, **kwargs)
         return wrapper
 
     def _load_settings(self) -> dict[str, Any]:
         """ 
         Returns settings from settings file
-        - Also handles if some or all settings missing 
+        - Also handles if some or all settings missing or corrupted
         """
         # [Check] if settings file not present: Default settings
         if not Path(self.settings_file_path).is_file():
             self._save_settings(self.default_settings)
-            return self.default_settings
+            return dict(self.default_settings)
 
         # [Load] settings from file
         with open(self.settings_file_path, 'r') as f:
@@ -71,7 +74,7 @@ class Settings:
                 return settings
             except json.decoder.JSONDecodeError:
                 self._save_settings(self.default_settings)
-                return self.default_settings
+                return dict(self.default_settings)
 
     def _save_settings(self, settings: dict[str, Any]) -> None:
         """ 
@@ -90,29 +93,7 @@ class Settings:
                 sort_keys=True
             )
 
-    @_D_refresh_settings
-    def update_setting(self, key: str, value: Any) -> None:
-        """ 
-        Updates the setting `key` = `value` in settings file 
-        """
-        self.settings[key] = value
-        self._save_settings(self.settings)
-
-    @_D_refresh_settings
-    def get_setting(self, key: str) -> Any | None:
-        """ 
-        Returns the value of setting `key` 
-        """
-        return self.settings.get(key)
-    
-    @_D_refresh_settings
-    def get_all_settings(self) -> dict[str, Any]:
-        """
-        Returns all the settings 
-        """
-        return self.settings
-    
-    def get_settings_file_path(self) -> str:
+    def _get_settings_file_path(self) -> str:
         """
         Create the settings file path by joining the settings directory and settings file name
         """
@@ -120,3 +101,26 @@ class Settings:
             self.settings_directory,
             self.settings_file_name
         )
+
+    @_hard_fetch
+    def update_setting(self, key: str, value: Any) -> None:
+        """ 
+        Updates the setting `key` = `value` in settings file 
+        """
+        self._settings[key] = value
+        self._save_settings(self._settings)
+
+    @_hard_fetch
+    def get_setting(self, key: str) -> Any | None:
+        """ 
+        Returns the value of setting `key` 
+        """
+        return self._settings.get(key)
+    
+    @_hard_fetch
+    def get_all_settings(self) -> dict[str, Any]:
+        """
+        Returns all the settings 
+        """
+        return self._settings
+    
