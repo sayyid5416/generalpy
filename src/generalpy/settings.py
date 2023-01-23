@@ -1,4 +1,4 @@
-""" This module contains classes and methods useful for apps """
+""" This module contains classes and methods related to settings """
 import os
 import json
 from pathlib import Path
