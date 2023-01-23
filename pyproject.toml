@@ -9,7 +9,7 @@ version = "1.0.0"
 authors = [
   { name="sayyid5416" },
 ]
-description = "Python package containing general classes and methods"
+description = "Python package for general classes and methods"
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [
