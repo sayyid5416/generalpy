@@ -1,6 +1,6 @@
 """ This python file is just for easy & simple testing of the Settings class """
 import random
-from src.pygeneral import Settings
+from src.generalpy import Settings
 
 
 defSettings = {

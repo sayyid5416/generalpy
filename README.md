@@ -1,8 +1,8 @@
 [![](../../actions/workflows/publish.yml/badge.svg)](../../actions/workflows/publish.yml)
 
-# 🔰 pygeneral
+# 🔰 generalpy
 - Python package for general classes and methods
-- Install using `pip install pygeneral`
+- Install using `pip install generalpy`
 
 ### 💠 `Settings` class
   - Class to handle all settings related aspect for an app

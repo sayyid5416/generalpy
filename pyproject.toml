@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 
 [project]
-name = "pygeneral"
+name = "generalpy"
 version = "1.0.0"
 authors = [
   { name="sayyid5416" },
@@ -20,5 +20,5 @@ classifiers = [
 
 
 [project.urls]
-"Homepage" = "https://github.com/sayyis5416/pygeneral"
-"Bug Tracker" = "https://github.com/sayyis5416/pygeneral/issues"
+"Homepage" = "https://github.com/sayyis5416/generalpy"
+"Bug Tracker" = "https://github.com/sayyis5416/generalpy/issues"
