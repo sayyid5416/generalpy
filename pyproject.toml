@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+
+[project]
+name = "pygeneral"
+version = "1.0.0"
+authors = [
+  { name="sayyid5416" },
+]
+description = "Python package containing general classes and methods"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+
+[project.urls]
+"Homepage" = "https://github.com/sayyis5416/pygeneral"
+"Bug Tracker" = "https://github.com/sayyis5416/pygeneral/issues"
