@@ -35,7 +35,7 @@ jobs:
         env:
           PYPI_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
         run: |
-          python -m twine upload -u __token__ -p $PYPI_PASSWORD dist/*
+          python -m twine upload --repository testpypi -u __token__ -p $PYPI_PASSWORD dist/*
 
       - name: (Upload to PyPI) distribution archives
         if: inputs.to_test_pypi == false
