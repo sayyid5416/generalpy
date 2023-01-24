@@ -2,6 +2,10 @@ name: Publish to PyPI
 
 on:
   workflow_dispatch:
+    inputs:
+      to_test_pypi:
+        description: Deploy to Test PyPI
+        type: boolean
   release:
     types: [prereleased, released]
 
@@ -26,7 +30,15 @@ jobs:
         run: |
           python -m build
 
-      - name: Uploading the distribution archives
+      - name: [Upload to Test PyPI] distribution archives
+        if: inputs.to_test_pypi == true
+        env:
+          PYPI_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
+        run: |
+          python -m twine upload -u __token__ -p $PYPI_PASSWORD dist/*
+
+      - name: [Upload to PyPI] distribution archives
+        if: inputs.to_test_pypi == false
         env:
           PYPI_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
