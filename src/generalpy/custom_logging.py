@@ -52,9 +52,13 @@ class LevelFormatter(logging.Formatter):
 class CustomLogging:
     """ Class to handle logging in easy way """
     
+    # compactFormat = f"[%(asctime)s] %(levelname)-8s %(module)-20s %(message)s"
+    compactFormat = f"%(module)-20s (%(lineno)-4d): {' ' * 10} %(message)s"
+    fullFormat = f"[%(asctime)s] [%(levelname)-8s: %(module)-20s-%(lineno)-4d]: {' ' * 10} %(message)s {' ' * 50} [%(threadName)s]"
+    
     def __init__(
         self,
-        loggerName: str,
+        loggerName: str | None = None,
         loggingLevel: int = logging.INFO,
         allLogsFilePath: str | None = None,
         errorLogsFilePath: str | None = None, 
@@ -75,7 +79,7 @@ class CustomLogging:
         - `initialMsg` : Initial message to set as soon as the logger initiates for the first time
         """
         # Args
-        self.loggerName = loggerName
+        self.loggerName = loggerName if loggerName else __name__
         self.loggingLevel = loggingLevel
         self.allLogsFilePath = allLogsFilePath
         self.errorLogsFilePath = errorLogsFilePath
@@ -98,9 +102,10 @@ class CustomLogging:
             self._initiate_file_logging(
                 self.errorLogsFilePath, logging.ERROR
             )
-        self.raw_logging(
-            initialMsg, True, True
-        )
+        if initialMsg:
+            self.raw_logging(
+                initialMsg, True, True
+            )
 
     def _initiate_logger(self):
         """ Returns `Logger` after initiating it """
@@ -111,26 +116,24 @@ class CustomLogging:
     
     def _get_compact_formatter(self):
         """ Returns compact `Formatter` after initiating it for all levels """
-        s1 = " " * 10
-        s2 = " " * 50
         return LevelFormatter(
             {
-                logging.DEBUG: f'~ %(module)s (%(lineno)d): {s1} %(message)s',
-                logging.INFO: f'> %(module)s (%(lineno)d): {s1} %(message)s',
-                logging.ERROR: f'[x] %(module)s (%(lineno)d): {s1} %(message)s',
+                logging.DEBUG: f'[~] {self.compactFormat}',
+                logging.INFO: f'[>] {self.compactFormat}',
+                logging.WARNING: f'[!] {self.compactFormat}',
+                logging.ERROR: f'[x] {self.compactFormat}',
             },
             timeZone=self.timeZone
         )
 
     def _get_full_formatter(self):
         """ Returns full `Formatter` after initiating it for all levels """
-        s1 = " " * 10
-        s2 = " " * 50
         return LevelFormatter(
             {
-                logging.DEBUG: f'~ [%(asctime)s] [%(levelname)s: %(module)s-%(lineno)d] {s1} > %(message)s {s2} [%(threadName)s]',
-                logging.INFO: f'> [%(asctime)s] [%(levelname)s: %(module)s-%(lineno)d] {s1} > %(message)s {s2} [%(threadName)s]',
-                logging.ERROR: f'[x] [%(asctime)s] [%(levelname)s: %(module)s-%(lineno)d] {s1} [x] %(message)s {s2} [%(threadName)s]',
+                logging.DEBUG: f'[~] {self.fullFormat}',
+                logging.INFO: f'[>] {self.fullFormat}',
+                logging.WARNING: f'[!] {self.fullFormat}',
+                logging.ERROR: f'[x] {self.fullFormat}',
             },
             datefmt=f"%Y-%m-%d %I:%M:%S %p ({self.timeZone})",
             timeZone=self.timeZone
