@@ -57,7 +57,8 @@ class CustomLogging:
         allLogsFilePath: str | None = None,
         errorLogsFilePath: str | None = None, 
         timeZone: str = 'Asia/Kolkata',
-        compactStreamLogs: bool = True
+        compactStreamLogs: bool = True,
+        initialMsg: str = ''
     ):
         """
         Class to handle logging in easy way
@@ -69,6 +70,7 @@ class CustomLogging:
         - `errorLogsFilePath` : If passed, all `ERROR` level logs would be saved to this file (with full format)
         - `timeZone` : time zone to set for `%(asctime)s` in full format
         - `compactStreamLogs` : Handle if stream logs should be compact or in full format
+        - `initialMsg` : Initial message to set as soon as the logger initiates for the first time
         """
         # Args
         self.loggerName = loggerName
@@ -93,6 +95,9 @@ class CustomLogging:
             self._initiate_file_logging(
                 self.errorLogsFilePath, logging.ERROR
             )
+        self.raw_logging(
+            initialMsg, True, True
+        )
 
     def _initiate_logger(self):
         """ Returns `Logger` after initiating it """
@@ -161,11 +166,11 @@ class CustomLogging:
         - toAllLogs : If `True`, `msg` would be logged to `errorLogsFilePath` too (if setted in constructor) .
         """
         def write_to_file(filePath:str):
-            with open(filePath, 'a+') as f:
+            with open(filePath, 'a') as f:
                 f.write(
                     f'{msg}\n'
                 )
-                
+        
         # Logging
         print(msg)
         if toAllLogsFile and self.allLogsFilePath:
