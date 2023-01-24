@@ -52,9 +52,8 @@ class LevelFormatter(logging.Formatter):
 class CustomLogging:
     """ Class to handle logging in easy way """
     
-    # compactFormat = f"[%(asctime)s] %(levelname)-8s %(module)-20s %(message)s"
-    compactFormat = f"%(module)-20s (%(lineno)-4d): {' ' * 10} %(message)s"
-    fullFormat = f"[%(asctime)s] [%(levelname)-8s: %(module)-20s-%(lineno)-4d]: {' ' * 10} %(message)s {' ' * 50} [%(threadName)s]"
+    compactFormat = f"%(module)-20s %(lineno)-4d : {' ' * 10} %(message)s"
+    fullFormat = f"[%(levelname)-8s] [%(asctime)s]   %(lineno)-4d - %(module)-20s : {' ' * 10} %(message)-100s {' ' * 10} [%(threadName)s]"
     
     def __init__(
         self,
@@ -118,8 +117,8 @@ class CustomLogging:
         """ Returns compact `Formatter` after initiating it for all levels """
         return LevelFormatter(
             {
-                logging.DEBUG: f'[~] {self.compactFormat}',
-                logging.INFO: f'[>] {self.compactFormat}',
+                logging.DEBUG: f'~   {self.compactFormat}',
+                logging.INFO: f'>   {self.compactFormat}',
                 logging.WARNING: f'[!] {self.compactFormat}',
                 logging.ERROR: f'[x] {self.compactFormat}',
             },
@@ -130,8 +129,8 @@ class CustomLogging:
         """ Returns full `Formatter` after initiating it for all levels """
         return LevelFormatter(
             {
-                logging.DEBUG: f'[~] {self.fullFormat}',
-                logging.INFO: f'[>] {self.fullFormat}',
+                logging.DEBUG: f'~   {self.fullFormat}',
+                logging.INFO: f'>   {self.fullFormat}',
                 logging.WARNING: f'[!] {self.fullFormat}',
                 logging.ERROR: f'[x] {self.fullFormat}',
             },
@@ -197,4 +196,4 @@ class CustomLogging:
         """ Close all available handlers: All file handlers & stream handler """
         for i in self.handlers:
             i.close()
-    
+
