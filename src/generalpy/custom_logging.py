@@ -2,6 +2,7 @@
 import logging
 from bisect import bisect
 from datetime import datetime
+from logging.handlers import RotatingFileHandler
 from pytz import timezone
 
 
@@ -81,7 +82,8 @@ class CustomLogging:
         self.compactStreamLogs = compactStreamLogs
         
         # Variables
-        self.logger = self._initiate_logger()
+        self.logger = self._initiate_logger()                                                   # Logger
+        self.handlers: set[logging.Handler] = set()                                             # List of all available handlers
         self.__compact_formatter = self._get_compact_formatter()
         self.__full_formatter = self._get_full_formatter()
         
@@ -132,7 +134,12 @@ class CustomLogging:
             datefmt=f"%Y-%m-%d %I:%M:%S %p ({self.timeZone})",
             timeZone=self.timeZone
         )
-        
+    
+    def _add_handler(self, handler: logging.Handler):
+        """ Adds `handler` to `Logger` """
+        self.logger.addHandler(handler)
+        self.handlers.add(handler)
+    
     def _initiate_stream_logging(self):
         """ Initiates logs streaming to Terminal
         - `Formatter` is based on `self.compactStreamLogs`
@@ -141,7 +148,7 @@ class CustomLogging:
         streamHand.setFormatter(
             self.__compact_formatter if self.compactStreamLogs else self.__full_formatter
         )
-        self.logger.addHandler(streamHand)
+        self._add_handler(streamHand)
 
     def _initiate_file_logging(self, fileLocation:str, loggingLevel, formatter: logging.Formatter | None = None):
         """ Initiates logs streaming to file present at `fileLocation`
@@ -150,10 +157,14 @@ class CustomLogging:
         """
         if formatter is None:
             formatter = self.__full_formatter
-        fileHand = logging.FileHandler(fileLocation)
+        fileHand = RotatingFileHandler(
+            fileLocation, 
+            maxBytes=int(1024 * 1024),
+            backupCount=1
+        )
         fileHand.setFormatter(formatter)
         fileHand.setLevel(loggingLevel)
-        self.logger.addHandler(fileHand)
+        self._add_handler(fileHand)
     
     def get_logger(self):
         """ Returns `logging.Logger` object """
@@ -177,3 +188,9 @@ class CustomLogging:
             write_to_file(self.allLogsFilePath)
         if toErrorLogsFile and self.errorLogsFilePath:
             write_to_file(self.errorLogsFilePath)
+
+    def close_logging_handlers(self):
+        """ Close all available handlers: All file handlers & stream handler """
+        for i in self.handlers:
+            i.close()
+    
