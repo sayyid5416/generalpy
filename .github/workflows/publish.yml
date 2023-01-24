@@ -30,14 +30,14 @@ jobs:
         run: |
           python -m build
 
-      - name: [Upload to Test PyPI] distribution archives
+      - name: (Upload to Test PyPI) distribution archives
         if: inputs.to_test_pypi == true
         env:
           PYPI_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
         run: |
           python -m twine upload -u __token__ -p $PYPI_PASSWORD dist/*
 
-      - name: [Upload to PyPI] distribution archives
+      - name: (Upload to PyPI) distribution archives
         if: inputs.to_test_pypi == false
         env:
           PYPI_PASSWORD: ${{ secrets.PYPI_TOKEN }}
