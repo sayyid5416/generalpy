@@ -12,7 +12,7 @@ from .custom_logging import CustomLogging
 
 
 
-def delete_files_by_prefix(
+def delete_files_by_prefix_suffix(
     directory: str,
     prefix: str | None = None,
     suffix: str | None = None,
