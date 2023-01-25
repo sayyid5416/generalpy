@@ -19,6 +19,10 @@ from .decorator import (
     run_threaded,
 )
 
+from .exceptions import (
+    IgnoreError
+)
+
 from .files import (
     delete_files_by_prefix_suffix,
     get_new_path,
