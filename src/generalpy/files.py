@@ -19,7 +19,8 @@ def delete_files_by_prefix_suffix(
     logger: logging.Logger | None = None
 ):
     """
-    Deletes all files in `directory` which have `prefix` as prefix or `suffix` as suffix in their name.
+    Deletes all files in `directory` and its subdirectories
+    which have `prefix` as prefix or `suffix` as suffix in their name.
     - `prefix=''` or `suffix=''` will remove all possible files in `directory`
     - `prefix` and `suffix` are not case sensitive
     - `logger`: for logging purposes
