@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "generalpy"
-version = "1.3.1"
+version = "1.3.2"
 authors = [
   { name="sayyid5416" },
 ]
@@ -23,5 +23,5 @@ dependencies = [
 
 
 [project.urls]
-"Homepage" = "https://github.com/sayyis5416/generalpy"
-"Bug Tracker" = "https://github.com/sayyis5416/generalpy/issues"
+"Homepage" = "https://github.com/sayyid5416/generalpy"
+"Bug Tracker" = "https://github.com/sayyid5416/generalpy/issues"
