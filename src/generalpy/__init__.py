@@ -6,6 +6,7 @@ from .decorator import (
     conditional
 )
 from .files import (
-    get_new_path
+    get_new_path,
+    read_file_chunks
 )
 from .settings import Settings

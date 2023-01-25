@@ -1,4 +1,5 @@
 """ This module contains methods and classes related files """
+from io import BufferedReader
 from pathlib import Path
 
 
@@ -23,5 +24,54 @@ def get_new_path(filePath: str, checkDir=False) -> str:
 
 
 
+def read_file_chunks(
+    file: str | BufferedReader,
+    chunkSize: int = 4096,
+    separator: bytes | None = None,
+    ignoreSeperator: bytes | None = None
+):
+    """
+    Read `file` and returns possible data of `chunkSize` 
+    
+    Args:
+    - `file` : File to be read
+    - `chunkSize` : Size of the chunk to read at a time
+    - `separator` : Data would be read only upto this separator (remaining data would be read next time)
+    - `ignoreSeperator` : Any data before this seperator would be ignored
+    """
+    # Open file
+    if isinstance(file, str):
+        fileObj = open(file, 'rb')
+    else:
+        fileObj = file
 
+    # Yield data
+    while True:
+        
+        # Read data
+        data = fileObj.read(chunkSize)
+        if not data:
+            break
+        
+        # [Modification] Consider data only AFTER separator2 (delete remaining data)
+        if ignoreSeperator and ignoreSeperator in data:
+            _, data = data.split(ignoreSeperator, 1)
+            data = data.replace(ignoreSeperator, b'')
+
+        # [Modification] Consider data only BEFORE separator (keep remaining data)
+        if separator and separator in data:
+            data, remainder = data.split(separator, 1)
+        else:
+            data, remainder = data, b''
+        
+        # Yield
+        if data:
+            yield data
+        
+        # Go back if data is remaining
+        fileObj.seek(-len(remainder), 1)
+    
+    # Close file
+    if isinstance(file, str):
+        fileObj.close()
 
