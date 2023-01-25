@@ -2,6 +2,8 @@
 This module contains methods and classes related files
 """
 from io import BufferedReader
+from logging import Logger
+import os
 from pathlib import Path
 
 
@@ -83,3 +85,47 @@ def read_file_chunks(
     if isinstance(file, str):
         fileObj.close()
 
+
+
+def delete_files_by_prefix(
+    directory: str,
+    prefix: str | None = None,
+    suffix: str | None = None,
+    logger: Logger | None = None
+):
+    """
+    Deletes all files in `directory` which have `prefix` as prefix or `suffix` as suffix in their name.
+    - `prefix=''` or `suffix=''` will remove all possible files in `directory`
+    - `prefix` and `suffix` are not case sensitive
+    - `logger`: for logging purposes
+    """
+    if prefix is None and suffix is None:
+        return
+    
+    def file_should_delete(fileName: str):
+        """ Returns True if file with `fileName` needs to be deleted """
+        fileName = fileName.lower()
+        if prefix and fileName.startswith(prefix.lower()):
+            return True
+        if suffix and fileName.endswith(suffix.lower()):
+            return True
+        return False
+
+    def delete_file(filePath: Path):
+        """ Deletes the file at `filePath` """
+        try:
+            os.remove(filePath)
+        except Exception as e:
+            if logger:
+                logger.warning(f'Not Deleted: {filePath}. Reason: {e}')
+        else:
+            if logger:
+                logger.debug(f'Deleted: {filePath}')
+
+    for parentFolder, foldersList, filesList in os.walk(directory):
+        for fileName in filesList:
+            
+            # [Delete file]
+            if file_should_delete(fileName):
+                filePath = Path(parentFolder, fileName)
+                delete_file(filePath)
