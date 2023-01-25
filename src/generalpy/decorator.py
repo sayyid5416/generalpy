@@ -1,9 +1,11 @@
 """ 
 This module contains decorators 
 """
+import logging
 import threading
-from logging import Logger
 from typing import Callable, Any
+
+from custom_logging import CustomLogging
 
 
 
@@ -28,7 +30,7 @@ def conditional(condition: bool, defaultValue: Any = None):
 def run_threaded(
     daemon: bool = True,
     name: str = 'Decorator thread', 
-    logger: Logger | None = None
+    logger: logging.Logger | None = None
 ):
     """ 
     Decorator to run the decorated function in a new thread 
@@ -36,16 +38,18 @@ def run_threaded(
     Args:
     - `daemon`: If thread should be daemon or not
     - `name`: Name of the new thread
-    - `logger`: `logging.Logger` to handle the `Exception`
+    - `logger`: for logging purposes
     """
+    if logger is None:
+        logger = CustomLogging(loggingLevel=logging.DEBUG).logger
+        
     def top_level_wrapper(func:Callable):
         def wrapper(*args, **kwargs):
             def main_function():
                 try:
                     func(*args, **kwargs)
                 except Exception as e:
-                    if logger:
-                        logger.exception(e)
+                    logger.exception(e)
                     raise
             return threading.Thread(
                 target=main_function,

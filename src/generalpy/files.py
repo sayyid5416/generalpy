@@ -2,9 +2,12 @@
 This module contains methods and classes related files
 """
 from io import BufferedReader
-from logging import Logger
+import logging
 import os
 from pathlib import Path
+
+from custom_logging import CustomLogging
+
 
 
 
@@ -91,7 +94,7 @@ def delete_files_by_prefix(
     directory: str,
     prefix: str | None = None,
     suffix: str | None = None,
-    logger: Logger | None = None
+    logger: logging.Logger | None = None
 ):
     """
     Deletes all files in `directory` which have `prefix` as prefix or `suffix` as suffix in their name.
@@ -101,6 +104,8 @@ def delete_files_by_prefix(
     """
     if prefix is None and suffix is None:
         return
+    if logger is None:
+        logger = CustomLogging(loggingLevel=logging.DEBUG).logger
     
     def file_should_delete(fileName: str):
         """ Returns True if file with `fileName` needs to be deleted """
@@ -116,11 +121,9 @@ def delete_files_by_prefix(
         try:
             os.remove(filePath)
         except Exception as e:
-            if logger:
-                logger.warning(f'Not Deleted: {filePath}. Reason: {e}')
+            logger.warning(f'Not Deleted: {filePath}. Reason: {e}')
         else:
-            if logger:
-                logger.debug(f'Deleted: {filePath}')
+            logger.debug(f'Deleted: {filePath}')
 
     for parentFolder, foldersList, filesList in os.walk(directory):
         for fileName in filesList:
