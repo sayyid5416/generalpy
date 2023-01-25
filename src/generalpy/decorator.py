@@ -1,4 +1,6 @@
-""" This module contains decorators """
+""" 
+This module contains decorators 
+"""
 import threading
 from logging import Logger
 from typing import Callable, Any

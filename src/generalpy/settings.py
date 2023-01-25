@@ -1,4 +1,6 @@
-""" This module contains classes and methods related to settings """
+"""
+This module contains classes and methods related to settings
+"""
 import os
 import json
 from pathlib import Path

@@ -1,4 +1,6 @@
-""" This module contains methods and classes related files """
+""" 
+This module contains methods and classes related files
+"""
 from io import BufferedReader
 from pathlib import Path
 

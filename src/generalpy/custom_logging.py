@@ -1,4 +1,6 @@
-""" This module contains classes and methods related to logging """
+""" 
+This module contains classes and methods related to logging
+"""
 import logging
 from bisect import bisect
 from datetime import datetime
