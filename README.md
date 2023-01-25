@@ -28,14 +28,14 @@
   - You can also set different time zone for `%(asctime)s`.
 
 
-## 💠 `decorator` module
+### 💠 `decorator` module
   This module contains decorators
   - `combine_single_items`: Combine item of sublists _(which contain only one item)_ into a single sublist.
   - `conditional`: Runs the decorated function and return it's value, only if provided condition is True.
   - `run_threaded`: Runs the decorated function in a new thread.
 
 
-## 💠 `files` module
+### 💠 `files` module
   This module contains methods to work with files
   - `delete_files_by_prefix_suffix`: Deletes all files in directory and its subdirectories according to prefix/suffix in their name.
   - `get_new_path`: Returns new filePath for files _(which do not exist)_ by appending (1/2/3/..).
