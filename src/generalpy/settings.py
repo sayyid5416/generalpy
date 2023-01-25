@@ -134,3 +134,12 @@ class Settings:
         self._settings[key] = value
         self._save_settings(self._settings)
 
+    def __str__(self) -> str:
+        """ Returns all settings in a properly formatted string """
+        if not self._settings:
+            return 'No settings available'
+        
+        text = 'Current settings:\n'
+        for k, v in self._settings.items():
+            text += f'• {k:20} : {v}\n'
+        return text.strip()
