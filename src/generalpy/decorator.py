@@ -10,6 +10,35 @@ from .custom_logging import CustomLogging
 
 
 
+def combine_single_items(func: Callable):
+    """
+    Decorator to combine item of sublists (which contain only one item) in a single sublist.
+    - New sublist would be attached in last
+    - Ex: `[['a'], ['b'], ['c', 'd']]` -> `[['c', 'd'], ['a', 'b']]`
+
+    Args:
+    - `func` (decorated function): It must return `list[list[str]]`
+    """
+    def wrapper(*args, **kwargs) -> list[list[str]]:
+        # Get lists
+        lists: list[list[str]] = func(*args, **kwargs)
+
+        # Parsing
+        combined_list: list[list[str]] = []
+        single_items: list[str] = []
+        for sublist in lists:
+            if len(sublist) == 1:
+                single_items.extend(sublist)
+            else:
+                combined_list.append(sublist)
+        if single_items:
+            combined_list.append(single_items)
+
+        return combined_list
+    return wrapper
+
+
+
 def conditional(condition: bool, defaultValue: Any = None):
     """ 
     Decorator to run the decorated function and return it's value, only when `condition=True`
@@ -58,34 +87,4 @@ def run_threaded(
             ).start()
         return wrapper
     return top_level_wrapper
-
-
-
-def combine_single_items(func: Callable):
-    """
-    Decorator to combine item of sublists (which contain only one item) in a single sublist.
-    - New sublist would be attached in last
-    - Ex: `[['a'], ['b'], ['c', 'd']]` -> `[['c', 'd'], ['a', 'b']]`
-
-    Args:
-    - `func` (decorated function): It must return `list[list[str]]`
-    """
-    def wrapper(*args, **kwargs) -> list[list[str]]:
-        # Get lists
-        lists: list[list[str]] = func(*args, **kwargs)
-
-        # Parsing
-        combined_list: list[list[str]] = []
-        single_items: list[str] = []
-        for sublist in lists:
-            if len(sublist) == 1:
-                single_items.extend(sublist)
-            else:
-                combined_list.append(sublist)
-        if single_items:
-            combined_list.append(single_items)
-
-        return combined_list
-    return wrapper
-
 
