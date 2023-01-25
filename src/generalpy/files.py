@@ -136,18 +136,24 @@ def delete_files_by_prefix(
 
 
 
-def get_random_file_path(fileExtension: str, parentDirectory: str | None = None, justFileName=False):
+def get_random_file_path(
+    fileExtension: str,
+    parentDirectory: str | None = None,
+    filePrefix: str = 'random-file-',
+    justFileName=False
+):
     """
     Returns a random path of a file which is not present, in `parentDirectory`
     
     Args:
     - `fileExtension`: Type of file. Ex: `fileExtension='mp4'`
     - `parentDirectory`: If None, current working directory would be used
+    - `filePrefix`: Prefix for the filename
     - `justFileName`: If True, only filename would be returned
     """
     def get_file_name():
         """ Returns a random filename """
-        return f'random-file-{random.randint(1, 100000)}.{fileExtension}'
+        return f'{filePrefix}{random.randint(1, 100000)}.{fileExtension}'
     
     # [Modify] parent directory
     if not parentDirectory:
