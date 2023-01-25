@@ -6,14 +6,14 @@ from typing import Callable, Any
 
 
 
-def availability_check(checker: bool, defaultValue: Any = None):
+def conditional(condition: bool, defaultValue: Any = None):
     """ 
-    Decorator to run the decorated function and return it's value, only when `checker=True`
+    Decorator to run the decorated function and return it's value, only when `condition=True`
     - Otherwise, `defaultValue` would be returned without running the decorated function
     """
     def top_level_wrapper(func:Callable):
         def wrapper(*args, **kwargs):
-            if checker:
+            if condition:
                 return func(
                     *args, **kwargs
                 )
@@ -23,7 +23,7 @@ def availability_check(checker: bool, defaultValue: Any = None):
 
 
 
-def threaded(
+def run_threaded(
     daemon: bool = True,
     name: str = 'Decorator thread', 
     logger: Logger | None = None
@@ -38,7 +38,7 @@ def threaded(
     """
     def top_level_wrapper(func:Callable):
         def wrapper(*args, **kwargs):
-            def newFucntion():
+            def main_function():
                 try:
                     func(*args, **kwargs)
                 except Exception as e:
@@ -46,7 +46,7 @@ def threaded(
                         logger.exception(e)
                     raise
             return threading.Thread(
-                target=newFucntion,
+                target=main_function,
                 name=name,
                 daemon=daemon
             ).start()
