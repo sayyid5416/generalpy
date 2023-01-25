@@ -22,6 +22,7 @@ from .decorator import (
 from .files import (
     delete_files_by_prefix,
     get_new_path,
+    get_random_file_path,
     read_file_chunks,
 )
 

@@ -5,13 +5,14 @@ from io import BufferedReader
 import logging
 import os
 from pathlib import Path
+import random
 
 from .custom_logging import CustomLogging
 
 
 
 
-def get_new_path(filePath: str, checkDir=False) -> str:
+def get_new_path(filePath: str | Path, checkDir=False) -> str:
     """
     Returns new `filePath` for files, which do not exist by appending (1/2/3/..). 
     - `checkDir`: If `True`, it would work for directory paths too.
@@ -132,3 +133,35 @@ def delete_files_by_prefix(
             if file_should_delete(fileName):
                 filePath = Path(parentFolder, fileName)
                 delete_file(filePath)
+
+
+
+def get_random_file_path(fileExtension: str, parentDirectory: str | None = None, justFileName=False):
+    """
+    Returns a random path of a file which is not present, in `parentDirectory`
+    
+    Args:
+    - `fileExtension`: Type of file. Ex: `fileExtension='mp4'`
+    - `parentDirectory`: If None, current working directory would be used
+    - `justFileName`: If True, only filename would be returned
+    """
+    def get_file_name():
+        """ Returns a random filename """
+        return f'random-file-{random.randint(1, 100000)}.{fileExtension}'
+    
+    # [Modify] parent directory
+    if not parentDirectory:
+        parentDirectory = os.getcwd()
+    
+    # Get filePath
+    filePath = get_new_path(
+        Path(
+            parentDirectory,
+            get_file_name()
+        )
+    )
+    
+    # Return
+    if justFileName:
+        return Path(filePath).name
+    return filePath
