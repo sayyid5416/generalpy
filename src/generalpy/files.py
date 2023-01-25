@@ -29,8 +29,8 @@ def get_new_path(filePath: str, checkDir=False) -> str:
 def read_file_chunks(
     file: str | BufferedReader,
     chunkSize: int = 4096,
-    separator: bytes | None = None,
-    ignoreSeperator: bytes | None = None
+    separator: str | bytes | None = None,
+    ignoreSeperator: str | bytes | None = None
 ):
     """
     Read `file` and returns possible data of `chunkSize` 
@@ -41,7 +41,13 @@ def read_file_chunks(
     - `separator` : Data would be read only upto this separator (remaining data would be read next time)
     - `ignoreSeperator` : Any data before this seperator would be ignored
     """
-    # Open file
+    # [Modify] Args
+    if isinstance(separator, str):
+        separator = separator.encode()
+    if isinstance(ignoreSeperator, str):
+        ignoreSeperator = ignoreSeperator.encode()
+    
+    # [Open] file
     if isinstance(file, str):
         fileObj = open(file, 'rb')
     else:
@@ -73,7 +79,7 @@ def read_file_chunks(
         # Go back if data is remaining
         fileObj.seek(-len(remainder), 1)
     
-    # Close file
+    # [Close] file
     if isinstance(file, str):
         fileObj.close()
 
