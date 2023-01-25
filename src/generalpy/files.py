@@ -3,13 +3,13 @@ from pathlib import Path
 
 
 
-def get_new_path(file_path: str, check_dir_too=False) -> str:
+def get_new_path(filePath: str, checkDir=False) -> str:
     """
-    Returns new `file_path` for files, which do not exist by appending (1/2/3/..). 
-    - `check_dir_too`: If `True`, it would work for directory paths too.
+    Returns new `filePath` for files, which do not exist by appending (1/2/3/..). 
+    - `checkDir`: If `True`, it would work for directory paths too.
     """
-    path = Path(file_path)
-    if path.exists() and bool(path.is_file() or check_dir_too):
+    path = Path(filePath)
+    if path.exists() and bool(path.is_file() or checkDir):
         i = 1
         while path.exists():
             # creates a new file path 
