@@ -6,7 +6,7 @@ import logging
 import os
 from pathlib import Path
 
-from custom_logging import CustomLogging
+from .custom_logging import CustomLogging
 
 
 

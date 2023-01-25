@@ -5,7 +5,7 @@ import logging
 import threading
 from typing import Callable, Any
 
-from custom_logging import CustomLogging
+from .custom_logging import CustomLogging
 
 
 
