@@ -28,6 +28,12 @@
   - You can also set different time zone for `%(asctime)s`.
 
 
+### 💠 `IgnoreError(Exception)` class
+  - This exception should be ignored after catching it for the sake of continuity.
+  - You can ignore it in `try: ... except IgnoreError: pass` block, or
+  - By logging/printing to console
+
+
 ### 💠 `decorator` module
   This module contains decorators
   - `combine_single_items`: Combine item of sublists _(which contain only one item)_ into a single sublist.
