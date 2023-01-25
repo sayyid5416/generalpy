@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="../../actions/workflows/publish.yml"><img src="../../actions/workflows/publish.yml/badge.svg"></a>
+  <a href="https://github.com/sayyid5416/generalpy/actions/workflows/publish.yml"><img src="https://github.com/sayyid5416/generalpy/actions/workflows/publish.yml/badge.svg"></a>
   <a href="https://pypi.org/project/generalpy"><img alt="PyPI" src="https://img.shields.io/pypi/v/generalpy?label=PyPI%20Package%20Version&logo=pypi&logoColor=white&style=plastic"></a>
 </p>
 
