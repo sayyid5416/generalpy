@@ -1,59 +1,12 @@
 """ 
 This module contains decorators 
 """
+import logging
 import threading
-from logging import Logger
 from typing import Callable, Any
 
+from .custom_logging import CustomLogging
 
-
-
-def conditional(condition: bool, defaultValue: Any = None):
-    """ 
-    Decorator to run the decorated function and return it's value, only when `condition=True`
-    - Otherwise, `defaultValue` would be returned without running the decorated function
-    """
-    def top_level_wrapper(func:Callable):
-        def wrapper(*args, **kwargs):
-            if condition:
-                return func(
-                    *args, **kwargs
-                )
-            return defaultValue
-        return wrapper
-    return top_level_wrapper
-
-
-
-def run_threaded(
-    daemon: bool = True,
-    name: str = 'Decorator thread', 
-    logger: Logger | None = None
-):
-    """ 
-    Decorator to run the decorated function in a new thread 
-
-    Args:
-    - `daemon`: If thread should be daemon or not
-    - `name`: Name of the new thread
-    - `logger`: `logging.Logger` to handle the `Exception`
-    """
-    def top_level_wrapper(func:Callable):
-        def wrapper(*args, **kwargs):
-            def main_function():
-                try:
-                    func(*args, **kwargs)
-                except Exception as e:
-                    if logger:
-                        logger.exception(e)
-                    raise
-            return threading.Thread(
-                target=main_function,
-                name=name,
-                daemon=daemon
-            ).start()
-        return wrapper
-    return top_level_wrapper
 
 
 
@@ -84,4 +37,54 @@ def combine_single_items(func: Callable):
         return combined_list
     return wrapper
 
+
+
+def conditional(condition: bool, defaultValue: Any = None):
+    """ 
+    Decorator to run the decorated function and return it's value, only when `condition=True`
+    - Otherwise, `defaultValue` would be returned without running the decorated function
+    """
+    def top_level_wrapper(func:Callable):
+        def wrapper(*args, **kwargs):
+            if condition:
+                return func(
+                    *args, **kwargs
+                )
+            return defaultValue
+        return wrapper
+    return top_level_wrapper
+
+
+
+def run_threaded(
+    daemon: bool = True,
+    name: str = 'Decorator thread', 
+    logger: logging.Logger | None = None
+):
+    """ 
+    Decorator to run the decorated function in a new thread 
+
+    Args:
+    - `daemon`: If thread should be daemon or not
+    - `name`: Name of the new thread
+    - `logger`: for logging purposes
+    """
+    if logger is None:
+        logger = CustomLogging(loggingLevel=logging.DEBUG).logger
+        
+    def top_level_wrapper(func:Callable):
+        def wrapper(*args, **kwargs):
+            def main_function():
+                try:
+                    func(*args, **kwargs)
+                except Exception as e:
+                    logger.exception(e)
+                    raise
+            return threading.Thread(
+                target=main_function,
+                name=name,
+                daemon=daemon
+            ).start()
+        return wrapper
+    return top_level_wrapper
 

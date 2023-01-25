@@ -2,11 +2,63 @@
 This module contains methods and classes related files
 """
 from io import BufferedReader
+import logging
+import random
+import os
 from pathlib import Path
 
+from .custom_logging import CustomLogging
 
 
-def get_new_path(filePath: str, checkDir=False) -> str:
+
+
+def delete_files_by_prefix_suffix(
+    directory: str,
+    prefix: str | None = None,
+    suffix: str | None = None,
+    logger: logging.Logger | None = None
+):
+    """
+    Deletes all files in `directory` and its subdirectories
+    which have `prefix` as prefix or `suffix` as suffix in their name.
+    - `prefix=''` or `suffix=''` will remove all possible files in `directory`
+    - `prefix` and `suffix` are not case sensitive
+    - `logger`: for logging purposes
+    """
+    if prefix is None and suffix is None:
+        return
+    if logger is None:
+        logger = CustomLogging(loggingLevel=logging.DEBUG).logger
+    
+    def file_should_delete(fileName: str):
+        """ Returns True if file with `fileName` needs to be deleted """
+        fileName = fileName.lower()
+        if prefix and fileName.startswith(prefix.lower()):
+            return True
+        if suffix and fileName.endswith(suffix.lower()):
+            return True
+        return False
+
+    def delete_file(filePath: Path):
+        """ Deletes the file at `filePath` """
+        try:
+            os.remove(filePath)
+        except Exception as e:
+            logger.warning(f'Not Deleted: {filePath}. Reason: {e}')
+        else:
+            logger.debug(f'Deleted: {filePath}')
+
+    for parentFolder, foldersList, filesList in os.walk(directory):
+        for fileName in filesList:
+            
+            # [Delete file]
+            if file_should_delete(fileName):
+                filePath = Path(parentFolder, fileName)
+                delete_file(filePath)
+
+
+
+def get_new_path(filePath: str | Path, checkDir=False) -> str:
     """
     Returns new `filePath` for files, which do not exist by appending (1/2/3/..). 
     - `checkDir`: If `True`, it would work for directory paths too.
@@ -23,6 +75,44 @@ def get_new_path(filePath: str, checkDir=False) -> str:
             )
             i += 1
     return str(path)
+
+
+
+def get_random_file_path(
+    fileExtension: str,
+    parentDirectory: str | None = None,
+    filePrefix: str = 'random-file-',
+    justFileName=False
+):
+    """
+    Returns a random path of a file which is not present, in `parentDirectory`
+    
+    Args:
+    - `fileExtension`: Type of file. Ex: `fileExtension='mp4'`
+    - `parentDirectory`: If None, current working directory would be used
+    - `filePrefix`: Prefix for the filename
+    - `justFileName`: If True, only filename would be returned
+    """
+    def get_file_name():
+        """ Returns a random filename """
+        return f'{filePrefix}{random.randint(1, 100000)}.{fileExtension}'
+    
+    # [Modify] parent directory
+    if not parentDirectory:
+        parentDirectory = os.getcwd()
+    
+    # Get filePath
+    filePath = get_new_path(
+        Path(
+            parentDirectory,
+            get_file_name()
+        )
+    )
+    
+    # Return
+    if justFileName:
+        return Path(filePath).name
+    return filePath
 
 
 
@@ -82,4 +172,3 @@ def read_file_chunks(
     # [Close] file
     if isinstance(file, str):
         fileObj.close()
-

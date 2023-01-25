@@ -1,8 +1,8 @@
 """
 This module contains classes and methods related to settings
 """
-import os
 import json
+import os
 from pathlib import Path
 from typing import Callable, Any
 
@@ -42,6 +42,15 @@ class Settings:
         # Init
         self.settings_file_path = self._get_settings_file_path()                     # path of settings file
         self._settings = self._load_settings()                                       # all settings
+
+    def _get_settings_file_path(self) -> str:
+        """
+        Create the settings file path by joining the settings directory and settings file name
+        """
+        return os.path.join(
+            self.settings_directory,
+            self.settings_file_name
+        )
 
     @staticmethod
     def _hard_fetch(func: Callable):
@@ -95,23 +104,6 @@ class Settings:
                 sort_keys=True
             )
 
-    def _get_settings_file_path(self) -> str:
-        """
-        Create the settings file path by joining the settings directory and settings file name
-        """
-        return os.path.join(
-            self.settings_directory,
-            self.settings_file_name
-        )
-
-    @_hard_fetch
-    def update_setting(self, key: str, value: Any) -> None:
-        """ 
-        Updates the setting `key` = `value` in settings file 
-        """
-        self._settings[key] = value
-        self._save_settings(self._settings)
-
     @_hard_fetch
     def get_setting(self, key: str) -> Any | None:
         """ 
@@ -134,3 +126,11 @@ class Settings:
         self._settings = dict(self.default_settings)
         self._save_settings(self._settings)
     
+    @_hard_fetch
+    def update_setting(self, key: str, value: Any) -> None:
+        """ 
+        Updates the setting `key` = `value` in settings file 
+        """
+        self._settings[key] = value
+        self._save_settings(self._settings)
+
