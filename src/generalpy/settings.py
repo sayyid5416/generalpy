@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 from typing import Callable, Any
 
+from .general import generate_repr_str
+
 
 
 
@@ -51,6 +53,11 @@ class Settings:
         self.settings_file_path = self._get_settings_file_path()                     # path of settings file
         self._settings = self._load_settings()                                       # all settings
 
+    def __repr__(self) -> str:
+        return generate_repr_str(
+            self, 'default_settings', 'settings_directory', 'settings_file_name', 'hard_fetch'
+        )
+    
     def __str__(self) -> str:
         """ Returns all settings in a properly formatted string """
         if not self._settings:
