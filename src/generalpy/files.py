@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 
 from .custom_logging import CustomLogging
+from .general import get_digit_from_text
 
 
 
@@ -66,12 +67,20 @@ def get_new_path(filePath: str | Path, checkDir=False) -> str:
     path = Path(filePath)
     if path.exists() and bool(path.is_file() or checkDir):
         i = 1
+
+        # File name
+        fileName = path.stem.strip()
+        availableNum = get_digit_from_text(fileName[-3:])
+        if availableNum:
+            i += availableNum                                           # Numbering will start from this number
+            fileName = fileName[:-3]                                    # Remove already available number
+        
+        # Creating new path
+        # by appending (i) to the file name
         while path.exists():
-            # creates a new file path 
-            # by appending (i) to the file name
             path = Path(
                 path.parent,
-                f'{path.stem}({i}){path.suffix}'
+                f'{fileName}({i}){path.suffix}'
             )
             i += 1
     return str(path)
