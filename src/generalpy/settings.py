@@ -25,13 +25,21 @@ class Settings:
         Class to handle all settings related aspect for an app
 
         Args:
-        - `default_settings`: Default settings to be used in case any setting is missing
-        - `settings_directory`: Directory where settings file would be stored (default: current working directory)
-        - `settings_file_name`: Name of the settings file
-        - `hard_fetch`: For fetching settings from settings file on every `get` and `update` method
-            - If setting file is modified, those changes will be fetched in app
-            - In other words, settings from settings file would be priortised over settings in app memory
-            - Keep it False, if you don't want this behavior
+            - `default_settings`: Default settings to be used in case any setting is missing
+            - `settings_directory`: Directory where settings file would be stored (default: current working directory)
+            - `settings_file_name`: Name of the settings file
+            - `hard_fetch`: If `True`, Fetches settings from settings file on every `get`, `update` and `__init__` method,
+                otherwise settings will be loaded from settings file only on `__init__` of this class.
+        
+        Handling missing settings from settings file:
+            - Settings file will be updated with missing data on: 
+                - every `fetching` of settings from settings file (d/f behavior acc. to `hard_fetch`)
+                - on `update`
+                - on `reset`
+        
+        Handling if settings file was modified: 
+            - Settings would be fetched from settings-file on:
+                - every `fetching` of settings from settings file (d/f behavior acc. to `hard_fetch`)
         """
         # Args
         self.default_settings = default_settings
