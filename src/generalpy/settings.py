@@ -105,11 +105,12 @@ class Settings:
             )
 
     @_hard_fetch
-    def get_setting(self, key: str) -> Any | None:
+    def get_setting(self, key: str, default: Any | None = None):
         """ 
-        Returns the value of setting `key` 
+        Returns the value of setting `key`.
+        - Returns `default`, if setting not found
         """
-        return self._settings.get(key)
+        return self._settings.get(key, default)
     
     @_hard_fetch
     def get_all_settings(self) -> dict[str, Any]:
