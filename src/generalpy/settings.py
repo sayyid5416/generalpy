@@ -51,6 +51,16 @@ class Settings:
         self.settings_file_path = self._get_settings_file_path()                     # path of settings file
         self._settings = self._load_settings()                                       # all settings
 
+    def __str__(self) -> str:
+        """ Returns all settings in a properly formatted string """
+        if not self._settings:
+            return 'No settings available'
+        
+        text = 'Current settings:\n'
+        for k, v in self._settings.items():
+            text += f'• {k:20} : {v}\n'
+        return text.strip()
+
     def _get_settings_file_path(self) -> str:
         """
         Create the settings file path by joining the settings directory and settings file name
@@ -59,17 +69,6 @@ class Settings:
             self.settings_directory,
             self.settings_file_name
         )
-
-    @staticmethod
-    def _hard_fetch(func: Callable):
-        """ 
-        Decorator to load settings from settings file before running decorated function 
-        """
-        def wrapper(self, *args, **kwargs):
-            if self.hard_fetch:
-                self._settings = self._load_settings()
-            return func(self, *args, **kwargs)
-        return wrapper
 
     def _load_settings(self) -> dict[str, Any]:
         """ 
@@ -95,6 +94,18 @@ class Settings:
                 self._save_settings(self.default_settings)
                 return dict(self.default_settings)
 
+    @staticmethod
+    def _reload_settings(func: Callable):
+        """
+        Decorator to re-load settings from settings-file 
+        before running the decorated function 
+        """
+        def wrapper(self, *args, **kwargs):
+            if self.hard_fetch:
+                self._settings = self._load_settings()
+            return func(self, *args, **kwargs)
+        return wrapper
+
     def _save_settings(self, settings: dict[str, Any]) -> None:
         """ 
         Save the `setting` dict to settings file
@@ -112,7 +123,7 @@ class Settings:
                 sort_keys=True
             )
 
-    @_hard_fetch
+    @_reload_settings
     def get_setting(self, key: str, default: Any | None = None):
         """ 
         Returns the value of setting `key`.
@@ -120,7 +131,7 @@ class Settings:
         """
         return self._settings.get(key, default)
     
-    @_hard_fetch
+    @_reload_settings
     def get_all_settings(self) -> dict[str, Any]:
         """
         Returns all the settings 
@@ -135,20 +146,10 @@ class Settings:
         self._settings = dict(self.default_settings)
         self._save_settings(self._settings)
     
-    @_hard_fetch
+    @_reload_settings
     def update_setting(self, key: str, value: Any) -> None:
         """ 
         Updates the setting `key` = `value` in settings file 
         """
         self._settings[key] = value
         self._save_settings(self._settings)
-
-    def __str__(self) -> str:
-        """ Returns all settings in a properly formatted string """
-        if not self._settings:
-            return 'No settings available'
-        
-        text = 'Current settings:\n'
-        for k, v in self._settings.items():
-            text += f'• {k:20} : {v}\n'
-        return text.strip()
