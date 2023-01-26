@@ -8,6 +8,8 @@ from logging.handlers import RotatingFileHandler
 
 from pytz import timezone
 
+from .general import generate_repr_str
+
 
 
 
@@ -169,26 +171,37 @@ class LevelFormatter(logging.Formatter):
         - `timeZone`: Change timezone for `%(asctime)s`
         """
         super().__init__(*args, **kwargs)
-        if 'fmt' in kwargs:
+        
+        # Args
+        self.formats = formats
+        self.args = args
+        self.kwargs = kwargs
+        self.timeZone = timeZone
+
+        # Function
+        if 'fmt' in self.kwargs:
             raise ValueError('Keyword argument "fmt" deprecated, use "formats"')
-        self.set_time_zone(timeZone)
-        self.formats = sorted(
+        self.set_time_zone(self.timeZone)
+        self.formatters = sorted(
             (
                 levelno,
                 logging.Formatter(
-                    fmt, **kwargs
+                    fmt, **self.kwargs
                 )
-            ) for levelno, fmt in formats.items()
+            ) for levelno, fmt in self.formats.items()
         )
+    
+    def __repr__(self) -> str:
+        return generate_repr_str(self, 'formats', 'timeZone', 'args', 'kwargs')
     
     def format(self, record: logging.LogRecord) -> str:
         """ Sets formatting """
         idx = bisect(
-            a=self.formats,
+            a=self.formatters,
             x=(record.levelno,),                                                   # Comma: To make it a tuple, instead of int
-            hi=len(self.formats) - 1
+            hi=len(self.formatters) - 1
         )
-        levelno, formatter = self.formats[idx]
+        levelno, formatter = self.formatters[idx]
         return formatter.format(
             record
         )
