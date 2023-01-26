@@ -47,3 +47,8 @@
   - `get_new_path`: Returns new filePath for files _(which do not exist)_ by appending (1/2/3/..).
   - `get_random_file_path`: Returns a random path of a file _(which do not exist)_ in parentDirectory.
   - `read_file_chunks`: Read file and returns possible data chunk by chunk.
+
+
+### 💠 `general` module
+  This module contains general methods
+  - `get_digit_from_text`: Returns the digit from the first occuurance of `(digit)`.
