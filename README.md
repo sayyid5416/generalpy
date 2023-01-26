@@ -51,4 +51,4 @@
 
 ### 💠 `general` module
   This module contains general methods
-  - `get_digit_from_text`: Returns the digit from the first occuurance of `(digit)`.
+  - `get_digit_from_text`: Returns the digit from the first occurrence of `(digit)`.
