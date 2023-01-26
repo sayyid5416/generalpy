@@ -24,6 +24,7 @@ from .exceptions import (
 )
 
 from .files import (
+    delete_files_by_condition,
     delete_files_by_prefix_suffix,
     get_new_path,
     get_random_file_path,

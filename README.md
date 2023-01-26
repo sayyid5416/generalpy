@@ -43,6 +43,7 @@
 
 ### 💠 `files` module
   This module contains methods to work with files
+  - `delete_files_by_condition`: Deletes all files in directory and its subdirectories according to some condition.
   - `delete_files_by_prefix_suffix`: Deletes all files in directory and its subdirectories according to prefix/suffix in their name.
   - `get_new_path`: Returns new filePath for files _(which do not exist)_ by appending (1/2/3/..).
   - `get_random_file_path`: Returns a random path of a file _(which do not exist)_ in parentDirectory.

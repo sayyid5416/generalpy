@@ -6,11 +6,45 @@ import logging
 import random
 import os
 from pathlib import Path
+from typing import Callable
 
 from .custom_logging import CustomLogging
 from .general import get_digit_from_text
 
 
+
+
+def delete_files_by_condition(
+    directory: str,
+    condition: Callable[[str], bool],
+    logger: logging.Logger | None = None
+):
+    """
+    Deletes all files in `directory` and its subdirectories if `condition(filename)` returns `True`
+
+    Args
+    - `directory`: Directory to search for files
+    - `condition`: A condition which will be checked before deleting individual files. `filename` would be passed to it.
+    - `logger`: for logging purposes
+    """
+    if logger is None:
+        logger = CustomLogging(loggingLevel=logging.DEBUG).logger
+    
+    def delete_file(filePath: Path):
+        """ Deletes the file at `filePath` """
+        try:
+            os.remove(filePath)
+        except Exception as e:
+            logger.warning(f'Not Deleted: {filePath}. Reason: {e}')
+        else:
+            logger.debug(f'Deleted: {filePath}')
+
+    for dirpath, dirnames, filenames in os.walk(directory):
+        for filename in filenames:
+            if condition(filename):
+                filepath = Path(dirpath, filename)
+                delete_file(filepath)
+    
 
 
 def delete_files_by_prefix_suffix(
@@ -22,17 +56,19 @@ def delete_files_by_prefix_suffix(
     """
     Deletes all files in `directory` and its subdirectories
     which have `prefix` as prefix or `suffix` as suffix in their name.
+    
+    Args:
     - `prefix=''` or `suffix=''` will remove all possible files in `directory`
     - `prefix` and `suffix` are not case sensitive
     - `logger`: for logging purposes
     """
     if prefix is None and suffix is None:
         return
-    if logger is None:
-        logger = CustomLogging(loggingLevel=logging.DEBUG).logger
     
     def file_should_delete(fileName: str):
-        """ Returns True if file with `fileName` needs to be deleted """
+        """ 
+        Returns `True` if `fileName` contains `prefix` or `suffix`
+        """
         fileName = fileName.lower()
         if prefix and fileName.startswith(prefix.lower()):
             return True
@@ -40,22 +76,12 @@ def delete_files_by_prefix_suffix(
             return True
         return False
 
-    def delete_file(filePath: Path):
-        """ Deletes the file at `filePath` """
-        try:
-            os.remove(filePath)
-        except Exception as e:
-            logger.warning(f'Not Deleted: {filePath}. Reason: {e}')
-        else:
-            logger.debug(f'Deleted: {filePath}')
-
-    for parentFolder, foldersList, filesList in os.walk(directory):
-        for fileName in filesList:
-            
-            # [Delete file]
-            if file_should_delete(fileName):
-                filePath = Path(parentFolder, fileName)
-                delete_file(filePath)
+    # Delete files
+    delete_files_by_condition(
+        directory=directory,
+        condition=file_should_delete,
+        logger=logger
+    )
 
 
 
