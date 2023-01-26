@@ -30,4 +30,10 @@ from .files import (
     read_file_chunks,
 )
 
-from .settings import Settings
+from .general import (
+    get_digit_from_text
+)
+
+from .settings import (
+    Settings
+)
