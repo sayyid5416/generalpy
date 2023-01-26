@@ -48,6 +48,7 @@ class CustomLogging:
         self.errorLogsFilePath = errorLogsFilePath
         self.timeZone = timeZone
         self.compactStreamLogs = compactStreamLogs
+        self.initialMsg = initialMsg
         
         # Variables
         self.logger = self._initiate_logger()                                                   # Logger
@@ -65,10 +66,22 @@ class CustomLogging:
             self._initiate_file_logging(
                 self.errorLogsFilePath, logging.ERROR
             )
-        if initialMsg:
+        if self.initialMsg:
             self.raw_logging(
-                initialMsg, True, True
+                self.initialMsg, True, True
             )
+
+    def __repr__(self) -> str:
+        return generate_repr_str(
+            self,
+            'loggerName',
+            'loggingLevel',
+            'allLogsFilePath',
+            'errorLogsFilePath',
+            'timeZone',
+            'compactStreamLogs',
+            'initialMsg'
+        )
 
     def _add_handler(self, handler: logging.Handler):
         """ Adds `handler` to `Logger` """
