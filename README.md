@@ -39,6 +39,7 @@
   - `combine_single_items`: Combine item of sublists _(which contain only one item)_ into a single sublist.
   - `conditional`: Runs the decorated function and return it's value, only if provided condition is True.
   - `run_threaded`: Runs the decorated function in a new thread.
+  - `time_it`: Prints the time taken by the decorated function.
 
 
 ### 💠 `files` module

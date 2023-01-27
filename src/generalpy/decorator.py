@@ -3,6 +3,7 @@ This module contains decorators
 """
 import logging
 import threading
+import time
 from typing import Callable, Any
 
 from .custom_logging import CustomLogging
@@ -88,3 +89,16 @@ def run_threaded(
         return wrapper
     return top_level_wrapper
 
+
+
+def time_it(func):
+    """
+    Decorator to print time taken by the decorated function
+    """
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        rv = func(*args, **kwargs)
+        end = time.perf_counter()
+        print(f'[Time taken: {end - start} seconds]')
+        return rv
+    return wrapper

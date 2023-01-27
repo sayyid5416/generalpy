@@ -17,6 +17,7 @@ from .decorator import (
     combine_single_items,
     conditional,
     run_threaded,
+    time_it
 )
 
 from .exceptions import (
