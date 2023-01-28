@@ -6,7 +6,11 @@ import os
 from pathlib import Path
 from typing import Callable, Any
 
-from .general import generate_repr_str
+"""
+Items imported inside functions/classes
+
+- from .general import generate_repr_str
+"""
 
 
 
@@ -54,6 +58,7 @@ class Settings:
         self._settings = self._load_settings()                                       # all settings
 
     def __repr__(self) -> str:
+        from .general import generate_repr_str
         return generate_repr_str(
             self, 'default_settings', 'settings_directory', 'settings_file_name', 'hard_fetch'
         )

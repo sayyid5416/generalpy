@@ -8,9 +8,12 @@ import os
 from pathlib import Path
 from typing import Callable
 
-from .custom_logging import CustomLogging
-from .general import get_digit_from_text
+"""
+Items imported inside functions/classes
 
+- from .custom_logging import CustomLogging
+- from .general import get_digit_from_text
+"""
 
 
 
@@ -28,6 +31,7 @@ def delete_files_by_condition(
     - `logger`: for logging purposes
     """
     if logger is None:
+        from .custom_logging import CustomLogging
         logger = CustomLogging(loggingLevel=logging.DEBUG).logger
     
     def delete_file(filePath: Path):
@@ -95,6 +99,7 @@ def get_new_path(filePath: str | Path, checkDir=False) -> str:
         i = 1
 
         # File name
+        from .general import get_digit_from_text
         fileName = path.stem.strip()
         availableNum = get_digit_from_text(fileName[-3:])
         if availableNum:

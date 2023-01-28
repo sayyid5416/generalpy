@@ -6,7 +6,11 @@ import threading
 import time
 from typing import Callable, Any
 
-from .custom_logging import CustomLogging
+"""
+Items imported inside functions/classes
+
+- from .custom_logging import CustomLogging
+"""
 
 
 
@@ -71,6 +75,7 @@ def run_threaded(
     - `logger`: for logging purposes
     """
     if logger is None:
+        from .custom_logging import CustomLogging
         logger = CustomLogging(loggingLevel=logging.DEBUG).logger
         
     def top_level_wrapper(func:Callable):

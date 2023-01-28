@@ -8,7 +8,11 @@ from logging.handlers import RotatingFileHandler
 
 from pytz import timezone
 
-from .general import generate_repr_str
+"""
+Items imported inside functions/classes
+
+- from .general import generate_repr_str
+"""
 
 
 
@@ -72,6 +76,7 @@ class CustomLogging:
             )
 
     def __repr__(self) -> str:
+        from .general import generate_repr_str
         return generate_repr_str(
             self,
             'loggerName',
@@ -205,6 +210,7 @@ class LevelFormatter(logging.Formatter):
         )
     
     def __repr__(self) -> str:
+        from .general import generate_repr_str
         return generate_repr_str(self, 'formats', 'timeZone', 'args', 'kwargs')
     
     def format(self, record: logging.LogRecord) -> str:
