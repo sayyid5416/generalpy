@@ -35,7 +35,8 @@ from .files import (
 
 from .general import (
     generate_repr_str,
-    get_digit_from_text
+    get_digit_from_text,
+    is_python
 )
 
 from .settings import (

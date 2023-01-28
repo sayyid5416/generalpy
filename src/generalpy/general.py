@@ -1,7 +1,9 @@
 """
 This module contains general classes and methods
 """
+from pathlib import Path
 import re
+import sys
 
 
 
@@ -32,3 +34,13 @@ def get_digit_from_text(text: str) -> int | None:
         val = match.group().removeprefix('(').removesuffix(')')
         if val.isdigit():
             return int(val)
+
+
+
+def is_python() -> bool:
+    """
+    Returns: `True` if current running app is `python`
+    """
+    appPath = Path(sys.executable)
+    appName = appPath.stem.lower()
+    return appName == 'python' or appName == 'pythonw'
