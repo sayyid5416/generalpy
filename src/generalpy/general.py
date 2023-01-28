@@ -6,6 +6,11 @@ from pathlib import Path
 import re
 import sys
 
+# This import could not be done inside any function.
+# So, be aware of circular imports.
+from .decorator import platform_specific
+
+
 
 
 
@@ -48,6 +53,7 @@ def is_python() -> bool:
 
 
 
+@platform_specific('win32')
 def set_app_user_model_id(appID: str):
     """
     Sets the App User Model ID for the current process. It is:
