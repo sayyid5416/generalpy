@@ -57,3 +57,4 @@
   - `generate_repr_str`: Returns a suitable string for `__repr__` method of classes.
   - `get_digit_from_text`: Returns the digit from the first occurrence of `(digit)`.
   - `is_python`: Returns `True` if current running app is `python`.
+  - `set_app_user_model_id`: Sets the App User Model ID for the current process on windows OS.
