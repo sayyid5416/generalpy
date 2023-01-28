@@ -2,6 +2,7 @@
 This module contains decorators 
 """
 import logging
+import sys
 import threading
 import time
 from typing import Callable, Any
@@ -56,6 +57,28 @@ def conditional(condition: bool, defaultValue: Any = None):
                     *args, **kwargs
                 )
             return defaultValue
+        return wrapper
+    return top_level_wrapper
+
+
+def platform_specific(*supportedPlatforms: str):
+    """
+    Decorator to run decorated function only if current platform is one of the `supportedPlatforms`
+    """
+    def top_level_wrapper(func: Callable):
+        def wrapper(*args, **kwargs):
+            # Check for platform
+            if sys.platform not in supportedPlatforms:
+                spfs = ', '.join(
+                    supportedPlatforms
+                ) if supportedPlatforms else 'None'
+                raise Exception(
+                    f"This function is only supported on: {spfs}. "
+                    f"Your platform ({sys.platform}) is not supported."
+                )
+            # Run function
+            rv = func(*args, **kwargs)
+            return rv
         return wrapper
     return top_level_wrapper
 

@@ -37,9 +37,10 @@
 ### 💠 `decorator` module
   This module contains decorators
   - `combine_single_items`: Combine item of sublists _(which contain only one item)_ into a single sublist.
-  - `conditional`: Runs the decorated function and return it's value, only if provided condition is True.
-  - `run_threaded`: Runs the decorated function in a new thread.
-  - `time_it`: Prints the time taken by the decorated function.
+  - `conditional`: Run decorated function and return it's value, only if provided condition is True.
+  - `platform_specific`: Run decorated function only if current platform is one of the `supportedPlatforms`
+  - `run_threaded`: Run decorated function in a new thread.
+  - `time_it`: Prints the time taken by decorated function.
 
 
 ### 💠 `files` module
