@@ -8,6 +8,10 @@ You can import classes and methods directly from this library, like `from genera
 or from their specific modules like `from generalpy.custom_logging import CustomLogging`
 """
 
+from .cli import (
+    TaskList
+)
+
 from .custom_logging import (
     CustomLogging,
     LevelFormatter,
@@ -44,6 +48,3 @@ from .settings import (
     Settings
 )
 
-from .taskmgr import (
-    TaskList
-)

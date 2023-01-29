@@ -1,5 +1,5 @@
 """ 
-This module contain classes and methods related to task manager
+This module contain classes and methods related to CLI (Command Line Interface)
 - Windows Only
 """
 import csv
