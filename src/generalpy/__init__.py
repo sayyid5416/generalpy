@@ -43,3 +43,7 @@ from .general import (
 from .settings import (
     Settings
 )
+
+from .taskmgr import (
+    TaskList
+)

@@ -37,6 +37,12 @@
   - Based on settings file stored in storage.
 
 
+### 💠 `TaskList` class _(windows OS only)_
+  - Handles functions related to `tasklist` command of windows OS.
+  - Get running tasks/executables
+  - Check if an exe is running or not, or how many of it's instances are running
+
+
 ---
 
 
