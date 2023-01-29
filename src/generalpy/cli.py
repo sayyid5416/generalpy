@@ -27,6 +27,9 @@ class TaskList:
         self._populate_tasks_str()
         self._populate_running_tasks()
     
+    def __str__(self) -> str:
+        return self.get_formatted_str_representation()
+    
     def _populate_running_tasks(self):
         """
         Populate `self.__runningTasks` after parsing data from `self.__tasksStr`, for all running tasks
@@ -57,6 +60,17 @@ class TaskList:
             creationflags=subprocess.CREATE_NO_WINDOW
         ).strip()
     
+    
+    def get_formatted_str_representation(self):
+        """
+        Returns properly formatted representation of all running tasks
+        """
+        tasks = f" {'-'* 51}\n"
+        for task in self.__runningTasks:
+            for k, v in task.items():
+                tasks += f"|   {k:15} : {v:30}|\n"
+            tasks += f" {'-'* 51}\n"
+        return tasks
     
     def get_headers(self):
         if not self.__runningTasks:
