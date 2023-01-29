@@ -3,9 +3,140 @@ This module contain classes and methods related to CLI (Command Line Interface)
 - Windows Only
 """
 import csv
+from logging import Logger
 import subprocess
+from typing import Literal
+
+from generalpy.custom_logging import CustomLogging
 
 from .decorator import platform_specific
+
+
+
+
+
+@platform_specific('win32')
+class ICACLS:
+    """
+    Handles the `icacls` command from windows OS.
+    To set/modify/remove the permissions for files/folders.
+    Use `icacls /?` in CMD for more info.
+
+        - Simple Permissions
+            - N - no access
+            - F - full access
+            - M - modify access
+            - RX - read and execute access
+            - R - read-only access
+            - W - write-only access
+            - D - delete access
+    """
+    
+    def __init__(self, path:str, accountName:str='Everyone'):
+        self.path = path
+        self.accountName = accountName
+        self.perms = ['N', 'F', 'M', 'RX', 'R', 'W', 'D']
+    
+    def __repr__(self) -> str:
+        from .general import generate_repr_str
+        return generate_repr_str(
+            self, 'path', 'accountName'
+        )
+    
+    def _subprocessWrapper(
+        self, 
+        act: Literal['get', 'grant', 'deny', 'remove'], 
+        perm: str | None = None,
+        logger: Logger | None = None
+    ):
+        """ Wrapper """
+        # Logger
+        if not logger:
+            logger = CustomLogging(__name__).logger
+        
+        # Program
+        if perm in self.perms or act in ['get', 'remove']:
+            # Permissions to set
+            if act in ['get', 'remove']: 
+                perm = None
+            permToSet = f':(OI)(CI){perm}' if perm else ''
+
+            # Command to run
+            args = ['icacls', self.path]
+            if act != 'get':
+                args += [
+                    f'/{act}',
+                    f'{self.accountName}{permToSet}'
+                ]
+            
+            # Process
+            try:
+                # icacls "B:/desktop/test" /deny Everyone:(OI)(CI)F
+                return subprocess.check_output(
+                    args,
+                    universal_newlines=True, 
+                    creationflags=subprocess.CREATE_NO_WINDOW
+                )
+            except subprocess.CalledProcessError as e:
+                logger.error(f'{e}')
+        else:
+            logger.info(f'Permission you want to set is not allowed ({perm})')
+
+    def denyPermissions(self, perm:str='F'):
+        """ Deny Permissions """ 
+        # Permission
+        permToCheck = '(N)' if perm=='F' else f'(DENY)({perm})'
+        
+        # Check if already set
+        for i, v  in self.getInfo().items():
+            if self.accountName in i and permToCheck in v:
+                return
+        
+        # If not running
+        return self._subprocessWrapper(
+            'deny', perm
+        )
+    
+    def getInfo(self):
+        """ 
+        Return the ACL information about `path` 
+        """
+        output = self._subprocessWrapper('get')
+        
+        # Parsing output
+        infoDict :dict[str, str] = {}
+        if output:
+            # Remove useless items
+            output = output.removeprefix(self.path)
+            output = output.replace('  ', '').strip()
+            
+            # Data structure
+            for p, i in enumerate(output.splitlines(), start=1):
+                try: 
+                    x, y = i.split(':')
+                except ValueError:
+                    pass
+                else:
+                    infoDict.update(
+                        {
+                            f'{p}- {x}': y
+                        }
+                    )
+        
+        return infoDict
+
+    def grantPermissions(self, perm:str='F'):
+        """ Grant Permissions """ 
+        return self._subprocessWrapper(
+            'grant', perm
+        )
+
+    def removeUser(self):
+        """ Removes the `accountName` from file security """        
+        return self._subprocessWrapper(
+            'remove'
+        )
+    
 
 
 

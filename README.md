@@ -20,10 +20,16 @@
   - You can also set different time zone for `%(asctime)s`.
 
 
+### 💠 `ICACLS` class _(windows OS only)_
+  - Handles functions related to `icacls` command from windows OS.
+  - To set/modify/remove the permissions for files/folders.
+  - Use `icacls /?` in CMD for more info.
+
+
 ### 💠 `IgnoreError(Exception)` class
   - This exception should be ignored after catching it for the sake of continuity.
   - You can ignore it in `try: ... except IgnoreError: pass` block, or
-  - By logging/printing to console
+  - By logging/printing to console.
 
 
 ### 💠 `LevelFormatter` class
@@ -33,14 +39,14 @@
 
 
 ### 💠 `Settings` class
-  - Class to handle all settings related aspect for an app.
+  - Handles all settings related aspect for an app.
   - Based on settings file stored in storage.
 
 
 ### 💠 `TaskList` class _(windows OS only)_
   - Handles functions related to `tasklist` command of windows OS.
-  - Get running tasks/executables
-  - Check if an exe is running or not, or how many of it's instances are running
+  - Get running tasks/executables.
+  - Check if an exe is running or not, or how many of it's instances are running.
 
 
 ---
