@@ -7,8 +7,6 @@ from logging import Logger
 import subprocess
 from typing import Literal
 
-from generalpy.custom_logging import CustomLogging
-
 from .decorator import platform_specific
 
 
@@ -127,6 +125,7 @@ class ICACLS:
         """ Wrapper """
         # Logger
         if not logger:
+            from .custom_logging import CustomLogging
             logger = CustomLogging(__name__).logger
         
         # Program
