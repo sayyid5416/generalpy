@@ -14,6 +14,81 @@ from .decorator import platform_specific
 
 
 
+@platform_specific('win32')
+class Attrib:
+    """
+    Handles the `attrib` command from windows OS.
+    To set/modify/remove the `A/H/I/R/S` attributes for files/folders.
+    Use `attrib /?` in CMD for more info.
+    """
+
+    def __init__(self, path:str) -> None:
+        self.path = path
+        self.attrsType = {
+            'A':False,
+            'H':False,
+            'I':False,
+            'R':False,
+            'S':False
+        }
+    
+    def __repr__(self) -> str:
+        from .general import generate_repr_str
+        return generate_repr_str(
+            self, 'path'
+        )
+    
+    def set(
+        self,
+        a: bool | None = None,
+        h: bool | None = None,
+        i: bool | None = None,
+        r: bool | None = None,
+        s: bool | None = None
+    ):
+        """ Set attributes to the file/folder of `path` """
+        # Data
+        newAttrs = []
+        currentAttrs = self.get()
+        for x, y in zip(
+            [a, h, i, r, s],
+            self.attrsType
+        ):                                                                          # Collect: if not already set
+            if x == True and not currentAttrs[y]:
+                newAttrs.append(f'+{y}')
+            elif x == False and currentAttrs[y]:
+                newAttrs.append(f'-{y}')
+        
+        # Set attributes
+        if newAttrs:
+            newAttrs.insert(0,'attrib')
+            newAttrs.append(self.path)
+            return subprocess.run(
+                newAttrs, 
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
+
+    def get(self):
+        """ Returns: Attributes set to the `path` """
+        # Get attribs for path
+        output = subprocess.check_output(
+            [
+                'attrib', self.path
+            ], 
+            universal_newlines=True, 
+            creationflags=subprocess.CREATE_NO_WINDOW
+        )
+        currentAttribs = output[:9].replace(' ', '')
+        
+        # Parse the attribs
+        attribs = dict(self.attrsType)
+        for i in currentAttribs:
+            if i in attribs:
+                attribs[i] = True
+        return attribs
+
+
+
 
 @platform_specific('win32')
 class ICACLS:

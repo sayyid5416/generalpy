@@ -11,6 +11,12 @@
 ---
 
 
+### 💠 `Attrib` class _(windows OS only)_
+  - Handles the `attrib` command from windows OS.
+  - To set/modify/remove the `A/H/I/R/S` attributes for files/folders.
+  - Use `attrib /?` in CMD for more info.
+
+
 ### 💠 `CustomLogging` class
   - Class to handle logging in easy way.
   - All logging class features + more.
