@@ -105,30 +105,37 @@ class ICACLS:
             - D - delete access
     """
     
-    def __init__(self, path:str, accountName:str='Everyone'):
+    def __init__(
+        self,
+        path: str,
+        accountName: str = 'Everyone',
+        logger: Logger | None = None
+    ):
+        # Modifying args
+        if not logger:
+            from .custom_logging import CustomLogging
+            logger = CustomLogging(__name__).logger
+
+        # Args
         self.path = path
         self.accountName = accountName
+        self.logger = logger
+        
+        # Data
         self.perms = ['N', 'F', 'M', 'RX', 'R', 'W', 'D']
     
     def __repr__(self) -> str:
         from .general import generate_repr_str
         return generate_repr_str(
-            self, 'path', 'accountName'
+            self, 'path', 'accountName', 'logger'
         )
     
     def _subprocessWrapper(
         self, 
         act: Literal['get', 'grant', 'deny', 'remove'], 
-        perm: str | None = None,
-        logger: Logger | None = None
+        perm: str | None = None
     ):
         """ Wrapper """
-        # Logger
-        if not logger:
-            from .custom_logging import CustomLogging
-            logger = CustomLogging(__name__).logger
-        
-        # Program
         if perm in self.perms or act in ['get', 'remove']:
             # Permissions to set
             if act in ['get', 'remove']: 
@@ -152,9 +159,9 @@ class ICACLS:
                     creationflags=subprocess.CREATE_NO_WINDOW
                 )
             except subprocess.CalledProcessError as e:
-                logger.error(f'{e}')
+                self.logger.error(f'{e}')
         else:
-            logger.info(f'Permission you want to set is not allowed ({perm})')
+            self.logger.info(f'Permission you want to set is not allowed ({perm})')
 
     def denyPermissions(self, perm:str='F'):
         """ Deny Permissions """ 
