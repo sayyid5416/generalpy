@@ -5,8 +5,11 @@ This module contain classes and methods related to CLI (Command Line Interface)
 import csv
 import subprocess
 
+from .decorator import platform_specific
 
 
+
+@platform_specific('win32')
 class TaskList:
     """
     Handles functions related to `tasklist` command of windows OS
