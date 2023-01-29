@@ -3,21 +3,13 @@
   <a href="https://pypi.org/project/generalpy"><img alt="PyPI" src="https://img.shields.io/pypi/v/generalpy?label=PyPI%20Package%20Version&logo=pypi&logoColor=white&style=plastic"></a>
 </p>
 
-# 🔰 generalpy
+### 🔰 generalpy
 - Python package for general classes and methods
 - Install using `pip install generalpy`
 
 
-### 💠 `Settings` class
-  - Class to handle all settings related aspect for an app.
-  - Based on settings file stored in storage.
-     
+---
 
-### 💠 `LevelFormatter` class
-  - Custom `logging.Formatter` class.
-  - To set formatting based on logging Levels. Like `logging.INFO`, `logging.ERROR` etc.
-  - You can also set different time zone for `%(asctime)s`
-     
 
 ### 💠 `CustomLogging` class
   - Class to handle logging in easy way.
@@ -32,6 +24,20 @@
   - This exception should be ignored after catching it for the sake of continuity.
   - You can ignore it in `try: ... except IgnoreError: pass` block, or
   - By logging/printing to console
+
+
+### 💠 `LevelFormatter` class
+  - Custom `logging.Formatter` class.
+  - To set formatting based on logging Levels. Like `logging.INFO`, `logging.ERROR` etc.
+  - You can also set different time zone for `%(asctime)s`
+
+
+### 💠 `Settings` class
+  - Class to handle all settings related aspect for an app.
+  - Based on settings file stored in storage.
+
+
+---
 
 
 ### 💠 `decorator` module
