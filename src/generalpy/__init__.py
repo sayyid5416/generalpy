@@ -19,6 +19,10 @@ from .custom_logging import (
     LevelFormatter,
 )
 
+from .database import (
+    DatabaseCollection,
+)
+
 from .decorator import (
     combine_single_items,
     conditional,

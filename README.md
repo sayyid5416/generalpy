@@ -26,6 +26,14 @@
   - You can also set different time zone for `%(asctime)s`.
 
 
+### 💠 `DatabaseCollection` class
+  - Handles the data of a collection `collectionName` in some database.
+  - This database will be in memory, but you can extend this functionality by using this class as a base class.
+  - And you can create a class which handles db locally or on cloud like MongoDB.
+  - **Database** structure should be: `DataBase > collection > collection-data`.
+  - Structure of **collection-data**: `dict[str, dict[str, Any]]` i.e `dataID: {dataType: dataValue, ...}, ...`
+
+
 ### 💠 `ICACLS` class _(windows OS only)_
   - Handles functions related to `icacls` command from windows OS.
   - To set/modify/remove the permissions for files/folders.
