@@ -4,3 +4,7 @@ from src.generalpy import *
 
 
 
+
+
+
+print('[TEST ENDED]')
