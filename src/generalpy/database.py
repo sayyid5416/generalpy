@@ -85,14 +85,14 @@ class DatabaseCollection:
     def _pop_from_collectionData(self, dataID: str):
         return self.__collectionData.pop(dataID)
     
+    def _set_collectionData(self, collectionData: dict[str, dict[str, Any]]):
+        self.__collectionData = collectionData
+
     def _update_collectionData(self, dataID: str, dataValue: dict[str, Any]):
         self.__collectionData.update(
             {dataID: dataValue}
         )
     
-    def _set_collectionData(self, collectionData: dict[str, dict[str, Any]]):
-        self.__collectionData = collectionData
-
 
     ## ---------------------------------- Getting data ---------------------------------- ##
     def get_all_data(self):
