@@ -57,7 +57,8 @@ class DatabaseCollection:
         self._update_dataID_fctn = _update_dataID_fctn
         self._update_dataType_fctn = _update_dataType_fctn
 
-        # Data -> {dataID : {dataType: dataValue, ...}, ... }
+        # Data in collection
+        # {dataID : {dataType: dataValue, ...}, ... }
         self.__collectionData: dict[str, dict[str, Any]] = dict(self.initialData)
     
     def __repr__(self):
@@ -73,9 +74,26 @@ class DatabaseCollection:
         )
     
     def __str__(self):
-        return 'JSON Representation of all data:\n' + self.get_all_data_as_json()
+        return 'JSON Representation of all data:\n' \
+            + self.get_all_data_as_json()
     
     
+    ## ----------------- Internal functions (for handling self.__collectionData) ----------------- ##
+    def _get_collectionData(self):
+        return self.__collectionData
+
+    def _pop_from_collectionData(self, dataID: str):
+        return self.__collectionData.pop(dataID)
+    
+    def _update_collectionData(self, dataID: str, dataValue: dict[str, Any]):
+        self.__collectionData.update(
+            {dataID: dataValue}
+        )
+    
+    def _set_collectionData(self, collectionData: dict[str, dict[str, Any]]):
+        self.__collectionData = collectionData
+
+
     ## ---------------------------------- Getting data ---------------------------------- ##
     def get_all_data(self):
         """
@@ -96,7 +114,7 @@ class DatabaseCollection:
     
     def get_data_of_dataID(
         self,
-        dataID: str|int, 
+        dataID: str | int, 
         default: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
@@ -154,7 +172,6 @@ class DatabaseCollection:
         self.update_data_of_dataID(
             newDataID, dict(idData)
         )
-        
         # Deleting old dataID
         if deleteOldID:
             self.delete_data_of_dataID(oldDataID)
@@ -192,7 +209,6 @@ class DatabaseCollection:
                 self._delete_dataType_fctn(
                     dataID, dataType
                 )
-        
         # Update the new data of dataID
         self.update_data_of_dataID(
             dataID, idData
@@ -239,20 +255,4 @@ class DatabaseCollection:
         )
     
     
-    ## ----------------- Internal functions (for handling self.__collectionData) ----------------- ##
-    def _get_collectionData(self):
-        return self.__collectionData
-
-    def _pop_from_collectionData(self, dataID: str):
-        return self.__collectionData.pop(dataID)
-    
-    def _update_collectionData(self, dataID: str, dataValue: dict[str, Any]):
-        self.__collectionData.update(
-            {dataID: dataValue}
-        )
-    
-    def _set_collectionData(self, collectionData: dict[str, dict[str, Any]]):
-        self.__collectionData = collectionData
-
-
 
