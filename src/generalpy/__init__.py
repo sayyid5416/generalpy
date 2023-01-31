@@ -21,6 +21,7 @@ from .custom_logging import (
 
 from .database import (
     DatabaseCollection,
+    Settings,
 )
 
 from .decorator import (
@@ -49,8 +50,3 @@ from .general import (
     is_python,
     set_app_user_model_id
 )
-
-from .settings import (
-    Settings
-)
-
