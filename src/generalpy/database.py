@@ -172,6 +172,7 @@ class DatabaseCollection:
         self.update_data_of_dataID(
             newDataID, dict(idData)
         )
+        
         # Deleting old dataID
         if deleteOldID:
             self.delete_data_of_dataID(oldDataID)
@@ -180,12 +181,8 @@ class DatabaseCollection:
         """
         Deletes the `dataID` and its data from collection
         """
-        # Modify
         dataID = str(dataID)
-        
-        # Delete dataID from collection
-        allData = self.get_all_data()
-        if dataID in allData:
+        if dataID in self.get_all_data():
             self._pop_from_collectionData(dataID)
             self._delete_dataID_fctn(dataID)
     
@@ -209,6 +206,7 @@ class DatabaseCollection:
                 self._delete_dataType_fctn(
                     dataID, dataType
                 )
+        
         # Update the new data of dataID
         self.update_data_of_dataID(
             dataID, idData
@@ -222,7 +220,6 @@ class DatabaseCollection:
         """
         Update the data of `dataID` with `dataValue`
         """
-        # Modify data
         dataID = str(dataID)
         self._update_collectionData(dataID, dataValue)
         self._update_dataID_fctn(dataID, dataValue)
