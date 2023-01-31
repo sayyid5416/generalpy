@@ -44,18 +44,18 @@ class DatabaseCollection:
         self,
         collectionName: str,
         initialData: dict[str, dict[str, Any]] | None = None,
-        delete_dataID_fctn:     Callable[[str], Any] =                  lambda *args: None,
-        delete_dataType_fctn:   Callable[[str, str], Any] =             lambda *args: None,
-        update_dataID_fctn:     Callable[[str, dict[str, Any]], Any] =  lambda *args: None,
-        update_dataType_fctn:   Callable[[str, str, Any], Any] =        lambda *args: None,
+        _delete_dataID_fctn:     Callable[[str], ...] =                  lambda *args, **kwargs: None,
+        _delete_dataType_fctn:   Callable[[str, str], Any] =             lambda *args, **kwargs: None,
+        _update_dataID_fctn:     Callable[[str, dict[str, Any]], Any] =  lambda *args, **kwargs: None,
+        _update_dataType_fctn:   Callable[[str, str, Any], Any] =        lambda *args, **kwargs: None,
     ):
         # Args
         self.collectionName = collectionName
         self.initialData = initialData if initialData else {}
-        self.delete_dataID_fctn = delete_dataID_fctn
-        self.delete_dataType_fctn = delete_dataType_fctn
-        self.update_dataID_fctn = update_dataID_fctn
-        self.update_dataType_fctn = update_dataType_fctn
+        self._delete_dataID_fctn = _delete_dataID_fctn
+        self._delete_dataType_fctn = _delete_dataType_fctn
+        self._update_dataID_fctn = _update_dataID_fctn
+        self._update_dataType_fctn = _update_dataType_fctn
 
         # Data -> {dataID : {dataType: dataValue, ...}, ... }
         self.__collectionData: dict[str, dict[str, Any]] = dict(self.initialData)
@@ -66,10 +66,10 @@ class DatabaseCollection:
             self, 
             'collectionName', 
             'initialData',
-            'delete_dataID_fctn',
-            'delete_dataType_fctn',
-            'update_dataID_fctn',
-            'update_dataType_fctn',
+            '_delete_dataID_fctn',
+            '_delete_dataType_fctn',
+            '_update_dataID_fctn',
+            '_update_dataType_fctn',
         )
     
     def __str__(self):
@@ -170,7 +170,7 @@ class DatabaseCollection:
         allData = self.get_all_data()
         if dataID in allData:
             self._pop_from_collectionData(dataID)
-            self.delete_dataID_fctn(dataID)
+            self._delete_dataID_fctn(dataID)
     
     def delete_data_of_dataType(
         self,
@@ -189,7 +189,7 @@ class DatabaseCollection:
         for dataType in dataTypes:
             if dataType in idData:
                 idData.pop(dataType)
-                self.delete_dataType_fctn(
+                self._delete_dataType_fctn(
                     dataID, dataType
                 )
         
@@ -209,7 +209,7 @@ class DatabaseCollection:
         # Modify data
         dataID = str(dataID)
         self._update_collectionData(dataID, dataValue)
-        self.update_dataID_fctn(dataID, dataValue)
+        self._update_dataID_fctn(dataID, dataValue)
 
     def update_data_of_dataType(
         self,
@@ -229,7 +229,7 @@ class DatabaseCollection:
         idData.update(
             {dataType: dataValue}
         )
-        self.update_dataType_fctn(
+        self._update_dataType_fctn(
             dataID, dataType, dataValue
         )
         
