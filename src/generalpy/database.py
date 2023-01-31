@@ -44,7 +44,7 @@ class DatabaseCollection:
         self,
         collectionName: str,
         initialData: dict[str, dict[str, Any]] | None = None,
-        _delete_dataID_fctn:     Callable[[str], ...] =                  lambda *args, **kwargs: None,
+        _delete_dataID_fctn:     Callable[[str], Any] =                  lambda *args, **kwargs: None,
         _delete_dataType_fctn:   Callable[[str, str], Any] =             lambda *args, **kwargs: None,
         _update_dataID_fctn:     Callable[[str, dict[str, Any]], Any] =  lambda *args, **kwargs: None,
         _update_dataType_fctn:   Callable[[str, str, Any], Any] =        lambda *args, **kwargs: None,
