@@ -48,5 +48,6 @@ from .general import (
     generate_repr_str,
     get_digit_from_text,
     is_python,
+    replace_multiple_chars,
     set_app_user_model_id
 )
