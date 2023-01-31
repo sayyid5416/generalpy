@@ -17,10 +17,10 @@ class DatabaseCollection:
     Args:
     - `collectionName`                  : Name of the collection in database
     - `initialData`                     : Initial data present in the collection (on initiation)
-    - `delete_dataID_fctn(dataID)`                          : It will run (in last), when `delete_data_of_dataID` is called.
-    - `delete_dataType_fctn(dataID, dataType)`              : It will run (in last), when `delete_data_of_dataType` is called.
-    - `update_dataID_fctn(dataID, dataValue)`               : It will run (in last), when `update_data_of_dataID` is called.
-    - `update_dataType_fctn(dataID, dataType, dataValue)`   : It will run (in last), when `update_data_of_dataType` is called.
+    - `_delete_dataID_fctn(dataID)`                          : It run (in last), when `delete_data_of_dataID` is called.
+    - `_delete_dataType_fctn(dataID, dataType)`              : It run (in last), when `delete_data_of_dataType` is called.
+    - `_update_dataID_fctn(dataID, dataValue)`               : It run (in last), when `update_data_of_dataID` is called.
+    - `_update_dataType_fctn(dataID, dataType, dataValue)`   : It run (in last), when `update_data_of_dataType` is called.
     
     Structure of `collection-data` (`dict[str, dict[str, Any]]`) :
     ```python
