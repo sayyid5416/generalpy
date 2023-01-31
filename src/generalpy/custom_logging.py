@@ -18,7 +18,18 @@ Items imported inside functions/classes
 
 
 class CustomLogging:
-    """ Class to handle logging in easy way """
+    """
+    Class to handle logging in easy way
+    
+    Args:
+    - `loggerName` : Name of the logger
+    - `loggingLevel` : level of logging like `logging.INFO`, logging.`ERROR` etc
+    - `allLogsFilePath` : If passed, all `INFO` level logs would be saved to this file (with full format)
+    - `errorLogsFilePath` : If passed, all `ERROR` level logs would be saved to this file (with full format)
+    - `timeZone` : time zone to set for `%(asctime)s` in full format
+    - `compactStreamLogs` : Handle if stream logs should be compact or in full format
+    - `initialMsg` : Initial message to set as soon as the logger initiates for the first time
+    """
     
     compactFormat = f"%(module)-20s %(lineno)-4d : {' ' * 10} %(message)s"
     fullFormat = f"[%(levelname)-8s] [%(asctime)s]   %(lineno)-4d - %(module)-20s : {' ' * 10} %(message)-100s {' ' * 10} [%(threadName)s]"
@@ -33,18 +44,6 @@ class CustomLogging:
         compactStreamLogs: bool = True,
         initialMsg: str = ''
     ):
-        """
-        Class to handle logging in easy way
-        
-        Args:
-        - `loggerName` : Name of the logger
-        - `loggingLevel` : level of logging like `logging.INFO`, logging.`ERROR` etc
-        - `allLogsFilePath` : If passed, all `INFO` level logs would be saved to this file (with full format)
-        - `errorLogsFilePath` : If passed, all `ERROR` level logs would be saved to this file (with full format)
-        - `timeZone` : time zone to set for `%(asctime)s` in full format
-        - `compactStreamLogs` : Handle if stream logs should be compact or in full format
-        - `initialMsg` : Initial message to set as soon as the logger initiates for the first time
-        """
         # Args
         self.loggerName = loggerName if loggerName else __name__
         self.loggingLevel = loggingLevel
@@ -182,14 +181,13 @@ class CustomLogging:
 
 
 class LevelFormatter(logging.Formatter):
+    """ `Formatter` class which sets formatting, based on the Levels, like `INFO`, `ERROR` etc 
+    - `formats` (dict) : `{levelno: fmt, ...}`
+    - `timeZone`: Change timezone for `%(asctime)s`
+    """
     
     def __init__(self, formats: dict[int, str], timeZone: str = 'Asia/Kolkata', *args, **kwargs):
-        """ `Formatter` class which sets formatting, based on the Levels, like `INFO`, `ERROR` etc 
-        - `formats` (dict) : `{levelno: fmt, ...}`
-        - `timeZone`: Change timezone for `%(asctime)s`
-        """
         super().__init__(*args, **kwargs)
-        
         # Args
         self.formats = formats
         self.args = args

@@ -18,6 +18,9 @@ class Attrib:
     Handles the `attrib` command from windows OS.
     To set/modify/remove the `A/H/I/R/S` attributes for files/folders.
     Use `attrib /?` in CMD for more info.
+    
+    Args:
+        - `path`: Path of the file/folder
     """
 
     def __init__(self, path:str) -> None:
@@ -94,15 +97,20 @@ class ICACLS:
     Handles the `icacls` command from windows OS.
     To set/modify/remove the permissions for files/folders.
     Use `icacls /?` in CMD for more info.
-
-        - Simple Permissions
-            - N - no access
-            - F - full access
-            - M - modify access
-            - RX - read and execute access
-            - R - read-only access
-            - W - write-only access
-            - D - delete access
+    
+    - Simple Permissions
+        - N - no access
+        - F - full access
+        - M - modify access
+        - RX - read and execute access
+        - R - read-only access
+        - W - write-only access
+        - D - delete access
+    
+    Args:
+        - `path`: Path of the file/folder
+        - `accountName`: Name of the account for the processes (like modifying the permissions)
+        - `logger`: `logging.Logger` to handle the logging
     """
     
     def __init__(
@@ -227,10 +235,7 @@ class TaskList:
     Handles functions related to `tasklist` command of windows OS
     """
     
-    def __init__(self) -> None:
-        """
-        Handles functions related to `tasklist` command of windows OS
-        """
+    def __init__(self):
         # Args
         self.__tasksStr: str = ''
         self.__runningTasks: list[dict[str, str]] = []
