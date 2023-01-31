@@ -56,7 +56,7 @@ def is_python() -> bool:
 def replace_multiple_chars(
     text: str,
     old: list[str] | list[tuple[str, str]],
-    new: str,
+    new: str = '-',
     count: int=-1
 ):
     """ 
