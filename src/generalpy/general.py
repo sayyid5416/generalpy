@@ -53,6 +53,16 @@ def is_python() -> bool:
 
 
 
+def replace_html_tags(text: str, repl: str=''):
+    """ Returns: `text` after replacing all HTML tags with `repl` """
+    return re.sub(
+        r'<.*?>', 
+        repl, 
+        text
+    )
+
+
+
 def replace_multiple_chars(
     text: str,
     old: list[str] | list[tuple[str, str]],
