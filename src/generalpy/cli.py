@@ -7,6 +7,7 @@ from logging import Logger
 import subprocess
 from typing import Literal
 
+from ._utils import _get_basic_logger
 from .decorator import platform_specific
 
 
@@ -119,15 +120,10 @@ class ICACLS:
         accountName: str = 'Everyone',
         logger: Logger | None = None
     ):
-        # Modifying args
-        if not logger:
-            from .custom_logging import CustomLogging
-            logger = CustomLogging(__name__).logger
-
         # Args
         self.path = path
         self.accountName = accountName
-        self.logger = logger
+        self.logger = logger or _get_basic_logger()
         
         # Data
         self.perms = ['N', 'F', 'M', 'RX', 'R', 'W', 'D']

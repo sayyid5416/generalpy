@@ -7,11 +7,7 @@ import threading
 import time
 from typing import Callable, Any
 
-"""
-Items imported inside functions/classes
-
-- from .custom_logging import CustomLogging
-"""
+from ._utils import _get_basic_logger
 
 
 
@@ -97,9 +93,7 @@ def retry_support(
         - If `onFailure` present: This function will run (exception will be passed to that value), else
         - That same exception will be re-raised
     """
-    if logger is None:
-        from .custom_logging import CustomLogging
-        logger = CustomLogging(loggingLevel=logging.DEBUG).logger
+    logger = logger or _get_basic_logger()
     
     def top_lvl_wrapper(fctn: Callable):
         def wrapper(*args, **kwargs):
@@ -137,9 +131,7 @@ def run_threaded(
     - `name`: Name of the new thread
     - `logger`: for logging purposes
     """
-    if logger is None:
-        from .custom_logging import CustomLogging
-        logger = CustomLogging(loggingLevel=logging.DEBUG).logger
+    logger = logger or _get_basic_logger()
         
     def top_level_wrapper(func:Callable):
         def wrapper(*args, **kwargs):

@@ -8,10 +8,11 @@ import os
 from pathlib import Path
 from typing import Callable
 
+from ._utils import _get_basic_logger
+
 """
 Items imported inside functions/classes
 
-- from .custom_logging import CustomLogging
 - from .general import get_digit_from_text
 """
 
@@ -30,9 +31,7 @@ def delete_files_by_condition(
     - `condition`: A condition which will be checked before deleting individual files. `filename` would be passed to it.
     - `logger`: for logging purposes
     """
-    if logger is None:
-        from .custom_logging import CustomLogging
-        logger = CustomLogging(loggingLevel=logging.DEBUG).logger
+    logger = logger or _get_basic_logger()
     
     def delete_file(filePath: Path):
         """ Deletes the file at `filePath` """
