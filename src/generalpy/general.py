@@ -5,6 +5,7 @@ import ctypes
 from pathlib import Path
 import re
 import sys
+from typing import Iterable
 
 # This import could not be done inside any function.
 # So, be aware of circular imports.
@@ -52,6 +53,20 @@ def get_digit_from_text(text: str) -> int | None:
         val = match.group().removeprefix('(').removesuffix(')')
         if val.isdigit():
             return int(val)
+
+
+
+def get_first_non_alphabet(string: str, ignoredChars: list[str] | None = None) -> str:
+    """
+    Returns the first non-alphabet character from `string`.
+    - `ignoredChars`: These characters will be ignored
+    """
+    if ignoredChars is None:
+        ignoredChars = []
+    for char in string:
+        if not char.isalpha() and char not in ignoredChars:
+            return char
+    return ' '
 
 
 
@@ -116,4 +131,32 @@ def set_app_user_model_id(appID: str):
     ctypes.windll.shell32.\
         SetCurrentProcessExplicitAppUserModelID(appID)
 
+
+
+def similarized(mainList: Iterable[str], sep: str | None = None) -> list[list[str]] :
+    """ Takes a list of strings and returns a list of sublists of similar-strings.
+    - Ex: `['HE_bro', 'SHE_why', 'HE_yes', 'SHE_ok', ...]` -> `[['HE_bro', 'HE_yes'], ['SHE_why', 'SHE_ok'], ...]`
+    - `sep`: If passed, elements would be parsed according to it, else on first-non-alphabet
+    """
+    finalList: list[list[str]] = []
+    similars: list[str] = []
+    current_prefix = None
+
+    for i in sorted(mainList):
+        prefix = i.split(
+            sep or get_first_non_alphabet(i)
+        )[0]
+        if prefix == current_prefix:
+            similars.append(i)
+        else:
+            if similars:
+                finalList.append(similars)
+                similars = []
+            current_prefix = prefix
+            similars.append(i)
+    
+    if similars:
+        finalList.append(similars)
+
+    return finalList
 

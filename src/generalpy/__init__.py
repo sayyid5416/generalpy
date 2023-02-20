@@ -49,8 +49,10 @@ from .general import (
     first_capital,
     generate_repr_str,
     get_digit_from_text,
+    get_first_non_alphabet,
     is_python,
     replace_html_tags,
     replace_multiple_chars,
-    set_app_user_model_id
+    set_app_user_model_id,
+    similarized
 )
