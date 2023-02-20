@@ -83,7 +83,8 @@ def retry_support(
     num: int = 3, 
     logger: logging.Logger | None = None,
     onFailure: Callable[[Exception], Any] | None = None,
-    retryWait: float = 1
+    retryWait: float = 1,
+    exponentialTime = False
 ):
     """
     Decorator to retry the decorated function `num` times
@@ -92,6 +93,7 @@ def retry_support(
     - After `num` retries, if error is still raised:
         - If `onFailure` present: This function will run (exception will be passed to that value), else
         - That same exception will be re-raised
+    - `exponentialTime`: If True, retry time will raise exponentially
     """
     logger = logger or _get_basic_logger()
     
@@ -102,7 +104,6 @@ def retry_support(
                 try:
                     rv = fctn(*args, **kwargs)
                 except Exception as e:
-                    _retries += 1
                     if _retries > num:
                         logger.debug(f'[Retry - limit reached] {fctn.__name__}. Re-raising Error: ({type(e).__name__}) {e}')
                         if onFailure:
@@ -110,7 +111,11 @@ def retry_support(
                         else:
                             raise
                     logger.error(f'[Retry - {_retries}] {fctn.__name__}. Error: ({type(e).__name__}) {e}')
-                    time.sleep(retryWait)
+                    time.sleep(
+                        ( retryWait * (2 ** _retries) ) 
+                        if exponentialTime else retryWait
+                    )
+                    _retries += 1
                 else:
                     return rv
         return wrapper
