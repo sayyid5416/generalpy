@@ -103,8 +103,9 @@ def remove_extra_spaces(s: str) -> str:
 
     # Remove extra whitespace between words on each line
     for i, line in enumerate(lines):
-        words = line.split()
-        lines[i] = ' '.join(words)
+        line = re.sub(r'[\x00-\x1f\x7f-\x9f\u200b-\u200f\u2028-\u202f\ufeff]', ' ', line)       # invisible chars
+        line = line.replace(r'&#32;', ' ')                                                      # HTML space
+        lines[i] = ' '.join(line.split())
 
     # Join the lines and return the result
     return '\n'.join(lines).strip()
