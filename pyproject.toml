@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "generalpy"
-version = "1.9.0"
+version = "1.9.1"
 authors = [
   { name="sayyid5416" },
 ]
