@@ -104,7 +104,7 @@ def retry_support(
                 try:
                     rv = fctn(*args, **kwargs)
                 except Exception as e:
-                    if _retries > num:
+                    if _retries >= num:
                         logger.debug(f'[Retry - limit reached] {fctn.__name__}. Re-raising Error: ({type(e).__name__}) {e}')
                         if onFailure:
                             onFailure(e)
