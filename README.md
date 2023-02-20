@@ -92,7 +92,9 @@
   - `get_digit_from_text`: Returns the digit from the first occurrence of `(digit)`.
   - `get_first_non_alphabet`: Returns the first non-alphabet character from string.
   - `is_python`: Returns `True` if current running app is `python`.
+  - `punctuate`: Adds punctuation after string, if not present.
   - `replace_html_tags`: Replace html tags from a string.
   - `replace_multiple_chars`: Replace multiple characters from a string.
   - `set_app_user_model_id`: Sets the App User Model ID for the current process on windows OS.
   - `similarized`: Takes a list of strings and returns a list of sublists of similar-strings.
+  - `sliced_list`: Slice a list into a list of sublists, where each sublist contains specific no. of items.

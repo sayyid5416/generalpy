@@ -51,8 +51,10 @@ from .general import (
     get_digit_from_text,
     get_first_non_alphabet,
     is_python,
+    punctuate,
     replace_html_tags,
     replace_multiple_chars,
     set_app_user_model_id,
-    similarized
+    similarized,
+    sliced_list
 )

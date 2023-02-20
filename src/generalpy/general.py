@@ -4,8 +4,9 @@ This module contains general classes and methods
 import ctypes
 from pathlib import Path
 import re
+from string import punctuation
 import sys
-from typing import Iterable
+from typing import Any, Iterable
 
 # This import could not be done inside any function.
 # So, be aware of circular imports.
@@ -77,6 +78,17 @@ def is_python() -> bool:
     appPath = Path(sys.executable)
     appName = appPath.stem.lower()
     return appName == 'python' or appName == 'pythonw'
+
+
+
+def punctuate(text: str, punc: str = '.'):
+    """ 
+    Adds `punc` in the end of `text`,
+    if no punctuation available 
+    """
+    if not text.endswith(tuple(punctuation)):
+        text += punc
+    return text
 
 
 
@@ -159,4 +171,19 @@ def similarized(mainList: Iterable[str], sep: str | None = None) -> list[list[st
         finalList.append(similars)
 
     return finalList
+
+
+
+def sliced_list(mainList: list[Any], n: int = 3):
+    """
+    Returns a list of sublists, 
+    where each sublist contains `n` items, 
+    created by slicing `mainList`.
+    """
+    return [
+        mainList[i:i+n] 
+        for i in range(
+            0, len(mainList), n
+        )
+    ]
 
