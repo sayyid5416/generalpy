@@ -119,8 +119,9 @@ def replace_html_tags(text: str, repl: str='', ignore: list[str] | None = None):
     """
     if ignore:
         # Build a regex pattern to match all tags except the ones in `ignore`
-        ignore_pattern = '|'.join(fr'(?!\/?{re.escape(tag)})' for tag in ignore)
-        pattern = fr'<({ignore_pattern}\/?.*?)>'
+        ignoredTags = '|'.join(fr'/?{tag}' for tag in ignore)
+        condition = fr'(?!(?:{ignoredTags})\b)'
+        pattern = fr'<{condition}.*?>'
     else:
         # If `ignore` is not specified, match all tags
         pattern = r'<.*?>'
