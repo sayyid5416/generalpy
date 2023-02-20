@@ -92,13 +92,20 @@ def punctuate(text: str, punc: str = '.'):
 
 
 
-def replace_html_tags(text: str, repl: str=''):
-    """ Returns: `text` after replacing all HTML tags with `repl` """
-    return re.sub(
-        r'<.*?>', 
-        repl, 
-        text
-    )
+def replace_html_tags(text: str, repl: str='', ignore: list[str] | None = None):
+    """ 
+    Returns: `text` after replacing all HTML tags with `repl`
+    - `ignore`: these tags will be ignored
+    """
+    if ignore:
+        # Build a regex pattern to match all tags except the ones in `ignore`
+        ignore_pattern = '|'.join(fr'(?!\/?{re.escape(tag)})' for tag in ignore)
+        pattern = fr'<({ignore_pattern}\/?.*?)>'
+    else:
+        # If `ignore` is not specified, match all tags
+        pattern = r'<.*?>'
+
+    return re.sub(pattern, repl, text)
 
 
 
