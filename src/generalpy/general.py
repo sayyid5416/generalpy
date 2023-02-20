@@ -14,6 +14,18 @@ from .decorator import platform_specific
 
 
 
+def first_capital(text: str) -> str:
+    """
+    Returns text after making first letter capital
+    - Do not change any other thing
+    """
+    first = text[:1]
+    return text.replace(
+        first, first.capitalize(), 1
+    )
+
+
+
 def generate_repr_str(classInst, *args: str):
     """
     Returns a suitable string for `__repr__` method of classes.

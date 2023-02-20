@@ -46,6 +46,7 @@ from .files import (
 )
 
 from .general import (
+    first_capital,
     generate_repr_str,
     get_digit_from_text,
     is_python,
