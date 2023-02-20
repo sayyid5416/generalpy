@@ -84,7 +84,8 @@ def retry_support(
     logger: logging.Logger | None = None,
     onFailure: Callable[[Exception], Any] | None = None,
     retryWait: float = 1,
-    exponentialTime = False
+    exponentialTime = False,
+    ignore: tuple[type[Exception], ...] | None = None
 ):
     """
     Decorator to retry the decorated function `num` times
@@ -94,8 +95,10 @@ def retry_support(
         - If `onFailure` present: This function will run (exception will be passed to that value), else
         - That same exception will be re-raised
     - `exponentialTime`: If True, retry time will raise exponentially
+    - `ignore`: These exceptions will be ignored, and retry won't occur for them
     """
     logger = logger or _get_basic_logger()
+    ignore = ignore or tuple()
     
     def top_lvl_wrapper(fctn: Callable):
         def wrapper(*args, **kwargs):
@@ -104,17 +107,17 @@ def retry_support(
                 try:
                     rv = fctn(*args, **kwargs)
                 except Exception as e:
+                    if isinstance(e, ignore):
+                        raise
                     if _retries >= num:
-                        logger.debug(f'[Retry - limit reached] {fctn.__name__}. Re-raising Error: ({type(e).__name__}) {e}')
-                        if onFailure:
-                            onFailure(e)
-                        else:
+                        if not onFailure:
+                            logger.debug(f'[Retry - limit reached] {fctn.__name__}. Re-raising Error: ({type(e).__name__}) {e}')
                             raise
+                        logger.debug(f'[Retry - limit reached] {fctn.__name__}. Running "{onFailure}" function for Error: ({type(e).__name__}) {e}')
+                        onFailure(e)
                     logger.error(f'[Retry - {_retries}] {fctn.__name__}. Error: ({type(e).__name__}) {e}')
-                    time.sleep(
-                        ( retryWait * (2 ** _retries) ) 
-                        if exponentialTime else retryWait
-                    )
+                    sleepTime = ( retryWait * (2 ** _retries) ) if exponentialTime else retryWait
+                    time.sleep(sleepTime)
                     _retries += 1
                 else:
                     return rv
