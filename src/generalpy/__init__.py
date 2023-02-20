@@ -28,6 +28,7 @@ from .decorator import (
     combine_single_items,
     conditional,
     platform_specific,
+    retry_support,
     run_threaded,
     time_it
 )
