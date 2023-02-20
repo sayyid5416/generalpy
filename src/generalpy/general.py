@@ -92,6 +92,25 @@ def punctuate(text: str, punc: str = '.'):
 
 
 
+def remove_extra_spaces(s: str) -> str:
+    """
+    Removed extra white spaces between words.
+    - New lines are preserved
+    - Also removes leading and trailing whitespace/new-lines
+    """
+    # Split the string into lines
+    lines = s.split('\n')
+
+    # Remove extra whitespace between words on each line
+    for i, line in enumerate(lines):
+        words = line.split()
+        lines[i] = ' '.join(words)
+
+    # Join the lines and return the result
+    return '\n'.join(lines).strip()
+
+
+
 def replace_html_tags(text: str, repl: str='', ignore: list[str] | None = None):
     """ 
     Returns: `text` after replacing all HTML tags with `repl`

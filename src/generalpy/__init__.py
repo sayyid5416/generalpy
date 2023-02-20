@@ -52,6 +52,7 @@ from .general import (
     get_first_non_alphabet,
     is_python,
     punctuate,
+    remove_extra_spaces,
     replace_html_tags,
     replace_multiple_chars,
     set_app_user_model_id,
