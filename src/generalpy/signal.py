@@ -69,6 +69,7 @@ class Signal:
         Connect `callback` to signal 
         - `defaultReturnValue`: This value will be returned on `.get_returned_value()` 
         if callback has not been emitted yet.
+        - `args`, `kwargs`: They would be passed to callback on runtime
         """
         self._callback = callback
         self.cb_args = args
