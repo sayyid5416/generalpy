@@ -55,7 +55,7 @@ class Signal:
     def connect(self, callback: Callable):
         """ Connect `callback` to signal """
         self._callback = callback
-        self.logger.debug(f'Callback "{callback.__name__}" setted for {self.name} signal')
+        self.logger.debug(f'Callback "{callback.__name__}" setted for "{self.name}" signal')
 
     def disconnect(self, callback: Callable, ignoreError = False):
         """ 
@@ -68,7 +68,7 @@ class Signal:
                 self.logger.debug(f'"{callback.__name__}" is not connected to "{self.name}" signal')
                 return
             raise ValueError(f'"{callback.__name__}" is not connected to "{self.name}" signal')
-        self.logger.debug(f'Removed "{callback.__name__}" from {self.name} signal')
+        self.logger.debug(f'Removed "{callback.__name__}" from "{self.name}" signal')
         self._callback = None
 
     def emit(self, threaded: bool | None = None, *args: Any, **kwargs: Any):
