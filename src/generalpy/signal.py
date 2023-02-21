@@ -8,54 +8,46 @@ from typing import Any, Callable
 
 class Signal:
     """
-    A signal object that can be used to connect callbacks.
-    - Simply connect a callback using `.connect(...)` method
-    - Emit the signal using `.emit(...)` method: All connected callbacks will run with given args and kwargs
-
-    Attributes:
-        - _callbacks: list of callback functions that are connected to this signal
+    A signal object that can be used to connect callback.
+    - Connect a callback using `.connect(...)` method
+        - Newer callback will overwrite the older callback
+    - Emit the signal using `.emit(...)` method to run the connected callback
+    
+    Args:
+        - `name`: Name of the signal
     """
 
-    def __init__(self):
-        self._callbacks: list[Callable] = []
-
-    def __iadd__(self, callback: Callable) -> "Signal":
-        """
-        Connect `callback` function to signal using the += operator.
-        """
-        self.connect(callback)
-        return self
-
-    def __isub__(self, callback: Callable) -> "Signal":
-        """
-        Disconnect `callback` function from signal (if present) using the -= operator
-        """
-        self.disconnect(callback)
-        return self
-
+    def __init__(self, name = 'Signal'):
+        self._callback: Callable | None = None
+        self.name = name
+    
+    def __repr__(self) -> str:
+        from .general import generate_repr_str
+        return generate_repr_str(
+            self, 'name'
+        )
 
     def connect(self, callback: Callable):
-        """ Connect `callback` function to signal """
-        self._callbacks.append(callback)
+        """ Connect `callback` to signal """
+        self._callback = callback
 
-    def disconnect(self, callback: Callable):
-        """ Disconnect `callback` function from signal (if present) """
-        if callback in self._callbacks:
-            self._callbacks.remove(callback)
+    def disconnect(self, callback: Callable, ignoreError = False):
+        """ 
+        Disconnect `callback` from signal
+        - raise `ValueError`, if `callback` is not connected to signal
+        - If `ignoreError = True`, `ValueError` won't be raised
+        """
+        if self._callback != callback:
+            if ignoreError:
+                return
+            raise ValueError(f'"{callback.__name__}" is not connected to "{self.name}" signal')
+        self._callback = None
 
-    def disconnect_all(self):
-        """ Disconnect all callback functions from signal """
-        self._callbacks.clear()
-    
     def emit(self, *args: Any, **kwargs: Any):
         """
         Emit the signal with the given arguments
-        - All connected callback functions will be called with the given arguments
+        - Connect callback will be called with the given arguments (if present)
         """
-        for callback in self._callbacks:
-            callback(*args, **kwargs)
-
-    def count(self) -> int:
-        """ Returns the number of connected callback functions """
-        return len(self._callbacks)
+        if self._callback:
+            self._callback(*args, **kwargs)
 
