@@ -2,7 +2,6 @@
 Module for signal and slot related functions
 """
 from logging import Logger
-import logging
 from typing import Any, Callable
 
 """
@@ -49,6 +48,7 @@ class Signal:
         self._callback: Callable | None = None
         self.cb_args = tuple()
         self.cb_kwargs = dict()
+        self.returnedValue_from_cb = None
         self._set_default_values()
     
     def __repr__(self) -> str:
@@ -62,12 +62,18 @@ class Signal:
         self._callback = None
         self.cb_args = tuple()
         self.cb_kwargs = dict()
+        self.returnedValue_from_cb = None
 
-    def connect(self, callback: Callable, *args, **kwargs):
-        """ Connect `callback` to signal """
+    def connect(self, callback: Callable, defaultReturnValue: Any = None, *args, **kwargs):
+        """ 
+        Connect `callback` to signal 
+        - `defaultReturnValue`: This value will be returned on `.get_returned_value()` 
+        if callback has not been emitted yet.
+        """
         self._callback = callback
         self.cb_args = args
         self.cb_kwargs = kwargs
+        self.returnedValue_from_cb = defaultReturnValue
         self.logger.debug(f'Callback "{callback.__name__}({args=}, {kwargs=})" setted for "{self.name}" signal')
 
     def disconnect(self, callback: Callable, ignoreError = False):
@@ -108,5 +114,13 @@ class Signal:
                     logger=self.logger,
                 )(self._callback)(*_args, **_kwargs)
             else:
-                self._callback(*_args, **_kwargs)
+                self.returnedValue_from_cb = self._callback(*_args, **_kwargs)
 
+    def get_returned_value(self):
+        """
+        Returns the returned-value of connected callback
+        - you must use `.emit(...)` method first to run the callback
+            - Else `defaultReturnValue` would be returned (which was set in `.connect(...)`)
+        - It doesn't work if callback is running in a different thread (i.e using `threaded`)
+        """
+        return self.returnedValue_from_cb
