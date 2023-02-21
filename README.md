@@ -56,6 +56,11 @@
   - Handles all settings related aspect for an app.
   - Based on settings file stored in storage.
 
+### 💠 `Signal` class
+  - A signal object that can be used to connect callbacks.
+  - Simply connect a callback using `.connect(...)` method.
+  - Emit the signal using `.emit(...)` method.
+  - All connected callbacks will run with given args and kwargs.
 
 ### 💠 `TaskList` class _(windows OS only)_
   - Handles functions related to `tasklist` command of windows OS.

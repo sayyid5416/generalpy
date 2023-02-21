@@ -59,3 +59,7 @@ from .general import (
     similarized,
     sliced_list
 )
+
+from .signal import (
+    Signal
+)
