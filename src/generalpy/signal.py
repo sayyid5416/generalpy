@@ -31,7 +31,7 @@ class Signal:
     def __init__(
         self, name = 'Signal',
         threaded = False,
-        daemon = True,
+        daemon = False,
         logger: Logger | None = None
     ):
         # Mods
