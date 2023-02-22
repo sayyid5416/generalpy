@@ -14,7 +14,7 @@ Items imported inside functions/classes
 
 
 
-defaultType = TypeVar('defaultType')
+type_of_result = TypeVar('type_of_result')
 
 
 
@@ -148,11 +148,11 @@ class DatabaseCollection:
         ...
     
     @overload
-    def get_data_of_dataType(self, dataID: str | int, dataType: str | int, default: defaultType) -> defaultType:
+    def get_data_of_dataType(self, dataID: str | int, dataType: str | int, default: type_of_result) -> type_of_result:
         ...
     
     @overload
-    def get_data_of_dataType(self, dataID: str | int, dataType: str | int, default: defaultType, ignoreError: bool) -> defaultType:
+    def get_data_of_dataType(self, dataID: str | int, dataType: str | int, default: type_of_result, ignoreError: bool) -> type_of_result:
         ...
     
     def get_data_of_dataType(self, dataID, dataType, default=None, ignoreError = False):
