@@ -151,15 +151,29 @@ class DatabaseCollection:
     def get_data_of_dataType(self, dataID: str | int, dataType: str | int, default: defaultType) -> defaultType:
         ...
     
-    def get_data_of_dataType(self, dataID, dataType, default=None):
+    @overload
+    def get_data_of_dataType(self, dataID: str | int, dataType: str | int, default: defaultType, ignoreError: bool) -> defaultType:
+        ...
+    
+    def get_data_of_dataType(self, dataID, dataType, default=None, ignoreError = False):
         """
         Returns: data/value of `dataType` from `dataID` from collection
         - `default` will be returned, if data not found for `dataType`
+        - If `default != None`, and `type(data-of-dataType) != type(default)`, 
+        `TypeError` will be raised (Use `ignoreError` to suppress this behavior)
         """
         dataID = str(dataID)
         dataType = str(dataType)
         idData = self.get_data_of_dataID(dataID)
         result = idData.get(dataType, default)
+        
+        if not ignoreError:
+            if default is not None:
+                if not isinstance(result, type(default)):
+                    raise TypeError(
+                        f'Type of result of dataType ({type(result).__name__}) is not same as default type ({type(default).__name__}). '
+                        'Use `ignoreError` argument to suppress this error.'
+                    )
         
         return result
 
