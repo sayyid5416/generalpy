@@ -4,13 +4,17 @@ This module contain classes and methods related to database/settings handling
 import json
 import os
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, TypeVar, overload
 
 """
 Items imported inside functions/classes
 - from .general import generate_repr_str
 """
 
+
+
+
+defaultType = TypeVar('defaultType')
 
 
 
@@ -139,22 +143,25 @@ class DatabaseCollection:
             dataID, default
         )
     
-    def get_data_of_dataType(
-        self,
-        dataID: str | int,
-        dataType: str | int,
-        default: Any = None
-    ) -> Any:
+    @overload
+    def get_data_of_dataType(self, dataID: str | int, dataType: str | int) -> Any | None:
+        ...
+    
+    @overload
+    def get_data_of_dataType(self, dataID: str | int, dataType: str | int, default: defaultType) -> defaultType:
+        ...
+    
+    def get_data_of_dataType(self, dataID, dataType, default=None):
         """
         Returns: data/value of `dataType` from `dataID` from collection
-        - `default` will be returned, if data not found
+        - `default` will be returned, if data not found for `dataType`
         """
         dataID = str(dataID)
         dataType = str(dataType)
         idData = self.get_data_of_dataID(dataID)
-        return idData.get(
-            dataType, default
-        )
+        result = idData.get(dataType, default)
+        
+        return result
 
 
     ## ---------------------------------- Updating data ---------------------------------- ##
@@ -258,7 +265,8 @@ class DatabaseCollection:
             dataID, idData
         )
 
-
+a = DatabaseCollection('')
+b = a.get_data_of_dataType(3, 3, None)
 
 
 
