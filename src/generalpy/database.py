@@ -279,8 +279,6 @@ class DatabaseCollection:
             dataID, idData
         )
 
-a = DatabaseCollection('')
-b = a.get_data_of_dataType(3, 3, None)
 
 
 
