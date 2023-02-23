@@ -22,7 +22,7 @@ class Signal:
     
     Args:
         - `name`: Name of the signal
-        - `threaded`: Emit the signal in a new thread (can be overridden during `.emit(...)`)
+        - `threaded`: Emit the signal in a new thread
         - `daemon`: If `threaded`, thread should be daemon or not
         - `logger`: `Logger` to be used for logging
     """
@@ -91,23 +91,21 @@ class Signal:
         self.logger.debug(f'Removed "{callback.__name__}" from "{self.name}" signal')
         self._set_default_values()
 
-    def emit(self, threaded: bool | None = None, *args: Any, **kwargs: Any):
+    def emit(self, *args: Any, **kwargs: Any):
         """
         Emit the signal with the given arguments
         - Connected callback will run with `args` and `kwargs` (if present)
             - These `args` and `kwargs` be passed along with those which were set in `.connect(...)` method
             - These `kwargs` will take precedence (in case of duplication) over those which were set in `.connect(...)` method
             - Final Args would be like `(earlier_args, these_args, final_kwargs)`
-        - `threaded`: If `True/False`, It overrides the behavior of `threaded` setted during `Signal(threaded=..., ...)`
         """
         # Modify
-        _threaded = self.threaded if threaded is None else threaded
         _args = self.cb_args + args
         _kwargs = {**self.cb_kwargs, **kwargs}
 
         # Run
         if self._callback:
-            if _threaded:
+            if self.threaded:
                 from .decorator import run_threaded
                 run_threaded(
                     daemon=self.daemon,
