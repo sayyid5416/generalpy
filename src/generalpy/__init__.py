@@ -47,6 +47,7 @@ from .files import (
 
 from .general import (
     first_capital,
+    format_bytes,
     generate_repr_str,
     get_digit_from_text,
     get_first_non_alphabet,

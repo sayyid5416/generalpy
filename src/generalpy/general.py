@@ -28,6 +28,27 @@ def first_capital(text: str) -> str:
 
 
 
+def format_bytes(size: float):
+    """
+    Converts bytes into a human-readable format.
+
+    Args:
+        size (int): Size in bytes.
+    """
+    units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+    i = 0
+    while size >= 1024 and i < len(units) - 1:
+        size /= 1024.0
+        i += 1
+    
+    formatted_size = f'{size:.2f}'
+    if '.' in formatted_size:
+        formatted_size = formatted_size.rstrip('0').rstrip('.')
+        
+    return f"{formatted_size} {units[i]}"
+
+
+
 def generate_repr_str(classInst, *args: str):
     """
     Returns a suitable string for `__repr__` method of classes.

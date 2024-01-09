@@ -94,6 +94,7 @@
 ### 💠 `general` module
   This module contains general methods
   - `first_capital`: Make first letter capital without changing any other thing.
+  - `format_bytes`: Returns human readable formats from bytes.
   - `generate_repr_str`: Returns a suitable string for `__repr__` method of classes.
   - `get_digit_from_text`: Returns the digit from the first occurrence of `(digit)`.
   - `get_first_non_alphabet`: Returns the first non-alphabet character from string.
