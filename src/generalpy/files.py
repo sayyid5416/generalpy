@@ -9,12 +9,14 @@ from pathlib import Path
 from typing import Callable
 
 from ._utils import _get_basic_logger
+from .decorator import platform_specific
 
 """
 Items imported inside functions/classes
 
 - from .general import get_digit_from_text
 """
+
 
 
 
@@ -152,6 +154,14 @@ def get_random_file_path(
     if justFileName:
         return Path(filePath).name
     return filePath
+
+
+@platform_specific('win32')
+def get_unsupported_file_path_chars():
+    """
+    Returns A list of characters which can't used in file names
+    """
+    return [i for i in r'\/:*?"<>|']
 
 
 
