@@ -106,3 +106,4 @@
   - `set_app_user_model_id`: Sets the App User Model ID for the current process on windows OS.
   - `similarized`: Takes a list of strings and returns a list of sublists of similar-strings.
   - `sliced_list`: Slice a list into a list of sublists, where each sublist contains specific no. of items.
+  - class `Calender_Class`: Class Containing functions related to Calendar

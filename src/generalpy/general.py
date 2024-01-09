@@ -236,3 +236,105 @@ def sliced_list(mainList: list[Any], n: int = 3):
         )
     ]
 
+
+
+
+
+
+
+
+
+
+
+
+class Calender_Class:
+    """
+    Class Containing functions related to Calendar
+    """        
+    
+    def __init__(self):
+        """
+        Class Containing functions related to Calendar
+        """        
+        
+        # Months Names Dict
+        self.gregorian_months_dict = {
+            1: ('january', 'jan'),
+            2: ('february', 'feb'),
+            3: ('march', 'mar'),
+            4: ('april', 'apr'),
+            5: ('may', 'may'),
+            6: ('june', 'jun'),
+            7: ('july', 'july'),
+            8: ('august', 'aug'),
+            9: ('september', 'sep'),
+            10: ('october', 'oct'),
+            11: ('november', 'nov'),
+            12: ('december', 'dec')
+        }
+        
+        # Months List
+        self.months_31 = [1, 3, 5, 7, 8, 10, 12]
+        self.months_30 = [4, 6, 9, 11]
+        self.months_feb = [2]
+    
+
+    def getMonthName(self, month_num:int, full_month_name:bool=True, capital:bool=False) -> str:
+        """
+        RETURNS: proper month name
+        """
+        
+        # Val to Return
+        if 1 <= month_num <=12:
+            if full_month_name:
+                val = self.gregorian_months_dict[month_num][0]
+            else:
+                val = self.gregorian_months_dict[month_num][1]
+        else:
+            val = 'not-applicable'
+        
+        # Capital
+        if capital:
+            val = val.title()
+        
+        return val
+
+
+    def get_months_days_num(self, month_num:int, leap_year:bool=False) -> int:
+        """
+        RETURNS: Number of days in a month
+        """        
+
+        # Checks
+        if month_num in self.months_30:
+            return 30
+        elif month_num in self.months_31:
+            return 31
+        elif month_num in self.months_feb:
+            if leap_year:
+                return 29
+            else:
+                return 28
+        else:
+            return 0
+    
+    
+    def check_months_num_validity(self, month_num:int, month_days:int, leap_year:bool=False) -> bool:
+        """
+        RETURNS:
+            - True: if month "month_num" contains "month_days" number of days
+            - False: if above condition doesn't met
+        """        
+        
+        # Checks
+        if month_num in self.months_31 and month_days > 31:
+            return False
+        elif month_num in self.months_30 and month_days > 30:
+            return False
+        elif month_num in self.months_feb and leap_year == True and month_days > 29:
+            return False
+        elif month_num in self.months_feb and leap_year == False and month_days > 28:
+            return False
+        else:
+            return True
+

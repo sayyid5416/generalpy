@@ -58,7 +58,8 @@ from .general import (
     replace_multiple_chars,
     set_app_user_model_id,
     similarized,
-    sliced_list
+    sliced_list,
+    Calender_Class
 )
 
 from .signal import (
