@@ -5,6 +5,7 @@ import logging
 import sys
 import threading
 import time
+from functools import wraps
 from typing import Callable, Any
 
 from ._utils import _get_basic_logger
@@ -135,6 +136,7 @@ def run_threaded(
 ):
     """ 
     Decorator to run the decorated function in a new thread 
+    - Use `__wrapped__` attribute to run the main function without running a thread
 
     Args:
     - `daemon`: If thread should be daemon or not
@@ -144,6 +146,7 @@ def run_threaded(
     logger = logger or _get_basic_logger()
         
     def top_level_wrapper(func:Callable):
+        @wraps(func)
         def wrapper(*args, **kwargs):
             def main_function():
                 try:
