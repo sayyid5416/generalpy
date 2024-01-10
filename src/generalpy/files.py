@@ -1,10 +1,11 @@
 """ 
 This module contains methods and classes related files
 """
-from io import BufferedReader
 import logging
-import random
 import os
+import random
+import string
+from io import BufferedReader
 from pathlib import Path
 from typing import Callable
 
@@ -221,3 +222,27 @@ def read_file_chunks(
     # [Close] file
     if isinstance(file, str):
         fileObj.close()
+
+
+
+
+@platform_specific('win32')
+def sanitised_filename(name: str, rep: str = '-'):
+    """
+    Sanitize filename by replacing unsupported or non-printable characters (for windows).
+
+    Args:
+        `name` (str): The original filename.
+        `rep` (str, optional): Replacement character for unsupported characters.
+    """
+    _unsupported = get_unsupported_file_path_chars()
+    _printable_ascii = set(string.printable)
+    
+    sanitizedName = ''
+    for i in name:
+        if i in _unsupported or \
+            i not in _printable_ascii:
+                i = rep
+        sanitizedName += i
+    
+    return sanitizedName

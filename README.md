@@ -90,6 +90,7 @@
   - `get_random_file_path`: Returns a random path of a file _(which do not exist)_ in parentDirectory.
   - `get_unsupported_file_path_chars`: Returns A list of characters which can't used in file names (windows_only)
   - `read_file_chunks`: Read file and returns possible data chunk by chunk.
+  - `sanitised_filename`: Sanitize filename by replacing unsupported or non-printable characters (for windows).
 
 
 ### 💠 `general` module
