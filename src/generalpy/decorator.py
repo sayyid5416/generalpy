@@ -13,7 +13,7 @@ from ._utils import _get_basic_logger
 
 
 
-def combine_single_items(func: Callable):
+def combine_single_items(func):
     """
     Decorator to combine item of sublists (which contain only one item) in a single sublist.
     - New sublist would be attached in last
@@ -22,6 +22,7 @@ def combine_single_items(func: Callable):
     Args:
     - `func` (decorated function): It must return `list[list[str]]`
     """
+    @wraps(func)
     def wrapper(*args, **kwargs) -> list[list[str]]:
         # Get lists
         lists: list[list[str]] = func(*args, **kwargs)
@@ -47,7 +48,8 @@ def conditional(condition: bool, defaultValue: Any = None):
     Decorator to run the decorated function and return it's value, only when `condition=True`
     - Otherwise, `defaultValue` would be returned without running the decorated function
     """
-    def top_level_wrapper(func:Callable):
+    def top_level_wrapper(func):
+        @wraps(func)
         def wrapper(*args, **kwargs):
             if condition:
                 return func(
@@ -71,7 +73,8 @@ def platform_specific(*supportedPlatforms: str):
                 f"Your platform ({sys.platform}) is not supported."
             )
     
-    def top_level_wrapper(func: Callable):
+    def top_level_wrapper(func):
+        @wraps(func)
         def wrapper(*args, **kwargs):
             check_platform()
             return func(*args, **kwargs)
@@ -101,7 +104,8 @@ def retry_support(
     logger = logger or _get_basic_logger()
     ignore = ignore or tuple()
     
-    def top_lvl_wrapper(fctn: Callable):
+    def top_lvl_wrapper(fctn):
+        @wraps(func)
         def wrapper(*args, **kwargs):
             _retries = 0
             while True:
@@ -145,7 +149,7 @@ def run_threaded(
     """
     logger = logger or _get_basic_logger()
         
-    def top_level_wrapper(func:Callable):
+    def top_level_wrapper(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
             def main_function():
@@ -168,6 +172,7 @@ def time_it(func):
     """
     Decorator to print time taken by the decorated function
     """
+    @wraps(func)
     def wrapper(*args, **kwargs):
         start = time.perf_counter()
         rv = func(*args, **kwargs)
