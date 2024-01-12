@@ -104,25 +104,25 @@ def retry_support(
     logger = logger or _get_basic_logger()
     ignore = ignore or tuple()
     
-    def top_lvl_wrapper(fctn):
+    def top_lvl_wrapper(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
             _retries = 0
             while True:
                 try:
-                    rv = fctn(*args, **kwargs)
+                    rv = func(*args, **kwargs)
                 except Exception as e:
                     if isinstance(e, ignore):
                         raise
                     if _retries >= num:
                         if not onFailure:
-                            logger.debug(f'[Retry - limit reached] {fctn.__name__}. Re-raising Error: ({type(e).__name__}) {e}')
+                            logger.debug(f'[Retry - limit reached] {func.__name__}. Re-raising Error: ({type(e).__name__}) {e}')
                             logger.exception(e)
                             raise
-                        logger.debug(f'[Retry - limit reached] {fctn.__name__}. Running "{onFailure}" function for Error: ({type(e).__name__}) {e}')
+                        logger.debug(f'[Retry - limit reached] {func.__name__}. Running "{onFailure}" function for Error: ({type(e).__name__}) {e}')
                         onFailure(e)
                         return
-                    logger.error(f'[Retry - {_retries}] {fctn.__name__}. Error: ({type(e).__name__}) {e}')
+                    logger.error(f'[Retry - {_retries}] {func.__name__}. Error: ({type(e).__name__}) {e}')
                     sleepTime = ( retryWait * (2 ** _retries) ) if exponentialTime else retryWait
                     time.sleep(sleepTime)
                     _retries += 1
