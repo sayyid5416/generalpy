@@ -1,6 +1,7 @@
 """ 
 This module contains decorators 
 """
+import asyncio
 import logging
 import sys
 import threading
@@ -141,6 +142,7 @@ def run_threaded(
     """ 
     Decorator to run the decorated function in a new thread 
     - Use `__wrapped__` attribute to run the main function without running a thread
+    - This decorator can handle both `sync` and `async` methods, BUT remember async functions would be awaited and NOT run in a different thread
 
     Args:
     - `daemon`: If thread should be daemon or not
@@ -148,22 +150,29 @@ def run_threaded(
     - `logger`: for logging purposes
     """
     logger = logger or _get_basic_logger()
-        
+    
     def top_level_wrapper(func):
+        
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper_sync(*args, **kwargs):
             def main_function():
                 try:
                     func(*args, **kwargs)
                 except Exception as e:
                     logger.exception(e)
                     raise
-            return threading.Thread(
-                target=main_function,
-                name=name,
-                daemon=daemon
-            ).start()
-        return wrapper
+            threading.Thread(target=main_function, name=name, daemon=daemon).start()
+        
+        @wraps(func)
+        async def wrapper_async(*args, **kwargs):
+            await func(*args, **kwargs)
+        
+        # Return
+        if asyncio.iscoroutinefunction(func):
+            return wrapper_async
+        else:
+            return wrapper_sync
+    
     return top_level_wrapper
 
 
