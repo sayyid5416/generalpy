@@ -119,7 +119,7 @@ def retry_support(
 
         # Checks
         if onFailure is not None:
-            if asyncio.iscoroutinefunction(func) and not asyncio.iscoroutinefunction(onFailure):
+            if asyncio.iscoroutinefunction(func) != asyncio.iscoroutinefunction(onFailure):
                 raise ValueError(f'[retry_support decorator] Both decorated function and onFailure function should be of same type, either sync or async')
 
         def _retry_on_failure(e: Exception):
