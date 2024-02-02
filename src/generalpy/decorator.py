@@ -48,16 +48,27 @@ def conditional(condition: bool, defaultValue: Any = None):
     """ 
     Decorator to run the decorated function and return it's value, only when `condition=True`
     - Otherwise, `defaultValue` would be returned without running the decorated function
+    - Supports both `sync` and `async` methods
     """
     def top_level_wrapper(func):
+        
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper_sync(*args, **kwargs):
             if condition:
-                return func(
-                    *args, **kwargs
-                )
+                return func(*args, **kwargs)
             return defaultValue
-        return wrapper
+        
+        @wraps(func)
+        async def wrapper_async(*args, **kwargs):
+            if condition:
+                return await func(*args, **kwargs)
+            return defaultValue
+        
+        if asyncio.iscoroutinefunction(func):
+            return wrapper_async
+        else:
+            return wrapper_sync
+        
     return top_level_wrapper
 
 
@@ -188,7 +199,7 @@ def run_threaded(
     """ 
     Decorator to run the decorated function in a new thread 
     - Use `__wrapped__` attribute to run the main function without running a thread
-    - This decorator can handle both `sync` and `async` methods, BUT remember async functions would be awaited and NOT run in a different thread
+    - This decorator can handle both `sync` and `async` methods, BUT remember async functions would be started using `asyncio.create_task` and NOT run in a different thread
 
     Args:
     - `daemon`: If thread should be daemon or not
@@ -211,7 +222,7 @@ def run_threaded(
         
         @wraps(func)
         async def wrapper_async(*args, **kwargs):
-            await func(*args, **kwargs)
+            asyncio.create_task(func(*args, **kwargs))
         
         # Return
         if asyncio.iscoroutinefunction(func):
