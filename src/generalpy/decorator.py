@@ -115,12 +115,12 @@ def retry_support(
     logger = logger or _get_basic_logger()
     ignore = ignore or tuple()
 
-    # Checks
-    if onFailure is not None:
-        if asyncio.iscoroutinefunction(func) and not asyncio.iscoroutinefunction(onFailure):
-            raise ValueError(f'[retry_support decorator] Both decorated function and onFailure function should be of same type, either sync or async')
-
     def top_lvl_wrapper(func):
+
+        # Checks
+        if onFailure is not None:
+            if asyncio.iscoroutinefunction(func) and not asyncio.iscoroutinefunction(onFailure):
+                raise ValueError(f'[retry_support decorator] Both decorated function and onFailure function should be of same type, either sync or async')
 
         def _retry_on_failure(e: Exception):
             if onFailure is None:
