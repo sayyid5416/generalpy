@@ -1,6 +1,7 @@
 """ 
 This module contains decorators 
 """
+import asyncio
 import logging
 import sys
 import threading
@@ -88,25 +89,71 @@ def retry_support(
     logger: logging.Logger | None = None,
     onFailure: Callable[[Exception], Any] | None = None,
     retryWait: float = 1,
-    exponentialTime = False,
+    exponentialTime: bool = False,
     ignore: tuple[type[Exception], ...] | None = None
 ):
     """
-    Decorator to retry the decorated function `num` times
-    - Retry occurs, if any `Exception` occurs in decorated function
-    - Retry occurs by `retryWait` seconds gap
-    - After `num` retries, if error is still raised:
-        - If `onFailure` present: This function will run (exception will be passed to that value), else
-        - That same exception will be re-raised
-    - `exponentialTime`: If True, retry time will raise exponentially
-    - `ignore`: These exceptions will be ignored, and retry won't occur for them
+    Decorator to retry the decorated function `num` times.
+
+    - Retry occurs if any `Exception` occurs in the decorated function.
+    - Retry occurs with a gap of `retryWait` seconds.
+    
+    - After `num` retries, if an error is still raised:
+        - If `onFailure` is present: This function will run (exception will be passed to that value), else
+        - That same exception will be re-raised.
+
+    Parameters:
+    - `num` (int): Number of retry attempts.
+    - `logger` (Logger | None): Logger instance for logging purposes. If None, a basic logger will be used.
+    - `onFailure` (Callable[[Exception], Any] | None): Optional function to run when retries are exhausted.
+    - `retryWait` (float): Time to wait between retries in seconds.
+    - `exponentialTime` (bool): If True, retry time will increase exponentially with each attempt.
+    - `ignore` (tuple[type[Exception], ...] | None): Exceptions to ignore and not trigger retries.
+
+    NOTE: This decorator can handle both `sync` and `async` methods, but both the decorated method and the 'onFailure' method should be of the same type.
     """
     logger = logger or _get_basic_logger()
     ignore = ignore or tuple()
-    
+
     def top_lvl_wrapper(func):
+
+        # Checks
+        if onFailure is not None:
+            if asyncio.iscoroutinefunction(func) != asyncio.iscoroutinefunction(onFailure):
+                raise ValueError(f'[retry_support decorator] Both decorated function and onFailure function should be of same type, either sync or async')
+
+        def _retry_on_failure(e: Exception):
+            if onFailure is None:
+                logger.debug(f'[Retry - limit reached] {func.__name__}. Re-raising Error: ({type(e).__name__}) {e}')
+                logger.exception(e)
+                raise
+            logger.debug(f'[Retry - limit reached] {func.__name__}. Running "{onFailure}" function for Error: ({type(e).__name__}) {e}')
+        
+        def _retry_time(retrialNum: int, e: Exception):
+            logger.error(f'[Retry - {retrialNum}] {func.__name__}. Error: ({type(e).__name__}) {e}')
+            sleepTime = (retryWait * (2 ** retrialNum)) if exponentialTime else retryWait
+            return sleepTime
+
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        async def wrapper_async(*args, **kwargs):
+            _retries = 0
+            while True:
+                try:
+                    rv = await func(*args, **kwargs)
+                except Exception as e:
+                    if isinstance(e, ignore):
+                        raise
+                    if _retries >= num:
+                        _retry_on_failure(e)
+                        await onFailure(e)
+                        return
+                    await asyncio.sleep(_retry_time(_retries, e))
+                    _retries += 1
+                else:
+                    return rv
+
+        @wraps(func)
+        def wrapper_sync(*args, **kwargs):
             _retries = 0
             while True:
                 try:
@@ -115,20 +162,20 @@ def retry_support(
                     if isinstance(e, ignore):
                         raise
                     if _retries >= num:
-                        if not onFailure:
-                            logger.debug(f'[Retry - limit reached] {func.__name__}. Re-raising Error: ({type(e).__name__}) {e}')
-                            logger.exception(e)
-                            raise
-                        logger.debug(f'[Retry - limit reached] {func.__name__}. Running "{onFailure}" function for Error: ({type(e).__name__}) {e}')
+                        _retry_on_failure(e)
                         onFailure(e)
                         return
-                    logger.error(f'[Retry - {_retries}] {func.__name__}. Error: ({type(e).__name__}) {e}')
-                    sleepTime = ( retryWait * (2 ** _retries) ) if exponentialTime else retryWait
-                    time.sleep(sleepTime)
+                    time.sleep(_retry_time(_retries, e))
                     _retries += 1
                 else:
                     return rv
-        return wrapper
+
+        # Return the appropriate wrapper based on whether the function is asynchronous
+        if asyncio.iscoroutinefunction(func):
+            return wrapper_async
+        else:
+            return wrapper_sync
+
     return top_lvl_wrapper
 
 
@@ -141,6 +188,7 @@ def run_threaded(
     """ 
     Decorator to run the decorated function in a new thread 
     - Use `__wrapped__` attribute to run the main function without running a thread
+    - This decorator can handle both `sync` and `async` methods, BUT remember async functions would be awaited and NOT run in a different thread
 
     Args:
     - `daemon`: If thread should be daemon or not
@@ -148,22 +196,29 @@ def run_threaded(
     - `logger`: for logging purposes
     """
     logger = logger or _get_basic_logger()
-        
+    
     def top_level_wrapper(func):
+        
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper_sync(*args, **kwargs):
             def main_function():
                 try:
                     func(*args, **kwargs)
                 except Exception as e:
                     logger.exception(e)
                     raise
-            return threading.Thread(
-                target=main_function,
-                name=name,
-                daemon=daemon
-            ).start()
-        return wrapper
+            threading.Thread(target=main_function, name=name, daemon=daemon).start()
+        
+        @wraps(func)
+        async def wrapper_async(*args, **kwargs):
+            await func(*args, **kwargs)
+        
+        # Return
+        if asyncio.iscoroutinefunction(func):
+            return wrapper_async
+        else:
+            return wrapper_sync
+    
     return top_level_wrapper
 
 
