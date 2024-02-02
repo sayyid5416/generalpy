@@ -15,7 +15,7 @@ Items imported inside functions/classes
 
 class Signal:
     """
-    A signal object that can be used to connect callback.
+    A signal object that can be used to connect callbacks and emit signals.
     - Connect a callback using `.connect(...)` method
         - Newer callback will overwrite the older callback
     - Emit the signal using `.emit(...)` method to run the connected callback
@@ -114,6 +114,23 @@ class Signal:
                 )(self._callback)(*_args, **_kwargs)
             else:
                 self.returnedValue_from_cb = self._callback(*_args, **_kwargs)
+
+    async def emit_async(self, *args: Any, **kwargs: Any):
+        """
+        (`Async`) Emit the signal with the given arguments
+        - Connected callback will run with `args` and `kwargs` (if present)
+            - Callback will run using `async` and `await`
+            - These `args` and `kwargs` be passed along with those which were set in `.connect(...)` method
+            - These `kwargs` will take precedence (in case of duplication) over those which were set in `.connect(...)` method
+            - Final Args would be like `(earlier_args, these_args, final_kwargs)`
+        """
+        # Modify
+        _args = self.cb_args + args
+        _kwargs = {**self.cb_kwargs, **kwargs}
+
+        # Run
+        if self._callback:
+            self.returnedValue_from_cb = await self._callback(*args, **kwargs)
 
     def get_returned_value(self):
         """
