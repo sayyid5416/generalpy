@@ -193,7 +193,7 @@ def retry_support(
 
 def run_threaded(
     daemon: bool = True,
-    name: str = 'Decorator thread', 
+    name: str = '', 
     logger: logging.Logger | None = None
 ):
     """ 
@@ -203,7 +203,7 @@ def run_threaded(
 
     Args:
     - `daemon`: If thread should be daemon or not
-    - `name`: Name of the new thread
+    - `name`: Name of the new thread (by default decorated function `__name__` will be used)
     - `logger`: for logging purposes
     """
     logger = logger or _get_basic_logger()
@@ -216,13 +216,14 @@ def run_threaded(
                 try:
                     func(*args, **kwargs)
                 except Exception as e:
+                    logger.debug(f'Error occured in {func.__name__} threaded function: {e}')
                     logger.exception(e)
                     raise
-            threading.Thread(target=main_function, name=name, daemon=daemon).start()
+            threading.Thread(target=main_function, name=name or func.__name__, daemon=daemon).start()
         
         @wraps(func)
         async def wrapper_async(*args, **kwargs):
-            asyncio.create_task(func(*args, **kwargs))
+            asyncio.create_task(func(*args, **kwargs), name=name or func.__name__)
         
         # Return
         if asyncio.iscoroutinefunction(func):
