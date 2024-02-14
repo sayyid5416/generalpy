@@ -1,6 +1,8 @@
 """
 Module for signal and slot related functions
 """
+import asyncio
+import time
 from logging import Logger
 from typing import Any, Callable
 
@@ -45,11 +47,9 @@ class Signal:
         self.logger = logger
 
         # Data
-        self._callback: Callable | None = None
-        self.cb_args = tuple()
-        self.cb_kwargs = dict()
+        self._connected_function_ran = False
         self.returnedValue_from_cb = None
-        self._set_default_values()
+        self.disconnect()
     
     def __repr__(self) -> str:
         from .general import generate_repr_str
@@ -57,47 +57,40 @@ class Signal:
             self, 'name', 'threaded', 'daemon', 'logger'
         )
     
-    def _set_default_values(self):
-        """ Sets the default values for items """
-        self._callback = None
-        self.cb_args = tuple()
-        self.cb_kwargs = dict()
-        self.returnedValue_from_cb = None
-
     def connect(self, callback: Callable, defaultReturnValue: Any = None, *args, **kwargs):
-        """ 
-        Connect `callback` to signal 
-        - `defaultReturnValue`: This value will be returned on `.get_returned_value()` 
-        if callback has not been emitted yet.
-        - `args`, `kwargs`: They would be passed to callback on runtime
+        """
+        Connects a callback to the signal.
+        
+        Args:
+            `callback`: The function to be connected.
+            `defaultReturnValue`: The value to be returned if the callback has not been emitted yet.
+            *args, **kwargs: Additional arguments to be passed to the callback.
         """
         self._callback = callback
         self.cb_args = args
         self.cb_kwargs = kwargs
         self.returnedValue_from_cb = defaultReturnValue
-        self.logger.debug(f'Callback "{callback.__name__}({args=}, {kwargs=})" setted for "{self.name}" signal')
+        self._connected_function_ran = False
+        self.logger.debug(f'Callback "{callback.__name__}({args=}, {kwargs=})" connected to "{self.name}" signal')
 
-    def disconnect(self, callback: Callable, ignoreError = False):
-        """ 
-        Disconnect `callback` from signal
-        - raise `ValueError`, if `callback` is not connected to signal
-        - If `ignoreError = True`, `ValueError` won't be raised
-        """
-        if self._callback != callback:
-            if ignoreError:
-                self.logger.debug(f'"{callback.__name__}" is not connected to "{self.name}" signal')
-                return
-            raise ValueError(f'"{callback.__name__}" is not connected to "{self.name}" signal')
-        self.logger.debug(f'Removed "{callback.__name__}" from "{self.name}" signal')
-        self._set_default_values()
+    def disconnect(self):
+        """ Disconnects a callback from the signal """
+        self._callback: Callable | None = None
+        self.cb_args = tuple()
+        self.cb_kwargs = dict()
+        self.logger.debug(f'Callback disconnected from "{self.name}" signal')
 
     def emit(self, *args: Any, **kwargs: Any):
         """
-        Emit the signal with the given arguments
-        - Connected callback will run with `args` and `kwargs` (if present)
-            - These `args` and `kwargs` be passed along with those which were set in `.connect(...)` method
+        Emits the signal with the given arguments.
+            
+        Args:
+            *args: Positional arguments to be passed to the callback.
+            **kwargs: Keyword arguments to be passed to the callback.
+        Notes:
+            - The connected callback will run synchronously unless it's in a separate thread (controlled by the 'threaded' attribute).
+            - The final arguments passed to the callback are a combination of those set during connection and those provided during signal emission.
             - These `kwargs` will take precedence (in case of duplication) over those which were set in `.connect(...)` method
-            - Final Args would be like `(earlier_args, these_args, final_kwargs)`
         """
         # Modify
         _args = self.cb_args + args
@@ -105,6 +98,7 @@ class Signal:
 
         # Run
         if self._callback:
+            self._connected_function_ran = False
             if self.threaded:
                 from .decorator import run_threaded
                 run_threaded(
@@ -114,15 +108,19 @@ class Signal:
                 )(self._callback)(*_args, **_kwargs)
             else:
                 self.returnedValue_from_cb = self._callback(*_args, **_kwargs)
+            self._connected_function_ran = True
 
     async def emit_async(self, *args: Any, **kwargs: Any):
         """
-        (`Async`) Emit the signal with the given arguments
-        - Connected callback will run with `args` and `kwargs` (if present)
-            - Callback will run using `async` and `await`
-            - These `args` and `kwargs` be passed along with those which were set in `.connect(...)` method
+        Asynchronously emits the signal with the given arguments.
+
+        Args:
+            *args: Positional arguments to be passed to the callback.
+            **kwargs: Keyword arguments to be passed to the callback.
+        Notes:
+            - The connected callback is expected to be an async function and will be awaited.
+            - The final arguments passed to the callback are a combination of those set during connection and those provided during signal emission.
             - These `kwargs` will take precedence (in case of duplication) over those which were set in `.connect(...)` method
-            - Final Args would be like `(earlier_args, these_args, final_kwargs)`
         """
         # Modify
         _args = self.cb_args + args
@@ -130,13 +128,43 @@ class Signal:
 
         # Run
         if self._callback:
+            self._connected_function_ran = False
             self.returnedValue_from_cb = await self._callback(*args, **kwargs)
+            self._connected_function_ran = True
 
-    def get_returned_value(self):
+    def get_returned_value(self, returnAfterComplete: bool=False):
         """
-        Returns the returned-value of connected callback
-        - you must use `.emit(...)` method first to run the callback
-            - Else `defaultReturnValue` would be returned (which was set in `.connect(...)`)
-        - It doesn't work if callback is running in a different thread (i.e using `threaded`)
+        Returns the returned value of the connected callback.
+
+        Args:
+            `returnAfterComplete`: If True, waits until the callback has completed before returning the value.
+        Notes:
+            - Returns the `defaultReturnValue` (which was set in `.connect(...)`) if the callback is running in a different thread (i.e using `threaded`) or if `emit()` has not been called.
+            - Setting `returnAfterComplete=True` will block the script until the callback has completed, except when the callback is running in a different thread.
+            - Use `returnAfterComplete=True` with caution as it may block the execution flow indefinitely if the callback never completes.
         """
+        if returnAfterComplete:
+            while True:
+                if self._connected_function_ran:
+                    break
+                time.sleep(1)
+        return self.returnedValue_from_cb
+
+    async def get_returned_value_async(self, returnAfterComplete: bool=False):
+        """
+        Returns the returned value of the connected callback.
+
+        Args:
+            `returnAfterComplete` (wait using `asyncio.sleep`) : If True, waits until the callback has completed before returning the value.
+        Notes:
+            - Returns the `defaultReturnValue` (which was set in `.connect(...)`) if the callback is running in a different thread (i.e using `threaded`) or if `emit()` has not been called.
+            - Setting `returnAfterComplete=True` will block the script until the callback has completed, except when the callback is running in a different thread.
+            - Use `returnAfterComplete=True` with caution as it may block the execution flow indefinitely if the callback never completes.
+            - This method is asynchronous and requires await when calling it.
+        """
+        if returnAfterComplete:
+            while True:
+                if self._connected_function_ran:
+                    break
+                await asyncio.sleep(1)
         return self.returnedValue_from_cb
