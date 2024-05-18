@@ -308,8 +308,6 @@ def sliced_list(mainList: list[Any], n: int = 3):
 
 
 
-c = '#141414'
-print('---------', get_adjusted_color(c, -1000), '--------')
 
 
 
