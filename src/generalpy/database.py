@@ -14,6 +14,7 @@ Items imported inside functions/classes
 
 
 
+#-todo: getters and setters
 type_of_result = TypeVar('type_of_result')
 
 
