@@ -30,7 +30,8 @@ class Signal:
     """
 
     def __init__(
-        self, name = 'Signal',
+        self, 
+        name = 'Signal',
         threaded = False,
         daemon = False,
         logger: Logger | None = None
@@ -41,14 +42,14 @@ class Signal:
             logger = _get_basic_logger()
 
         # Args
-        self.name = name
-        self.threaded = threaded
-        self.daemon = daemon
-        self.logger = logger
+        self.__name = name
+        self.__threaded = threaded
+        self.__daemon = daemon
+        self.__logger = logger
 
         # Data
-        self._connected_function_ran = False
-        self.returnedValue_from_cb = None
+        self.__connected_function_ran = False
+        self.__returnedValue_from_cb = None
         self.disconnect()
     
     def __repr__(self) -> str:
@@ -56,6 +57,18 @@ class Signal:
         return generate_repr_str(
             self, 'name', 'threaded', 'daemon', 'logger'
         )
+    
+    @property
+    def name(self):
+        return self.__name
+    
+    @property
+    def logger(self):
+        return self.__logger
+    
+    @logger.setter
+    def logger(self, value: Logger):
+        self.__logger = value
     
     def connect(self, callback: Callable, defaultReturnValue: Any = None, *args, **kwargs):
         """
@@ -69,16 +82,16 @@ class Signal:
         self._callback = callback
         self.cb_args = args
         self.cb_kwargs = kwargs
-        self.returnedValue_from_cb = defaultReturnValue
-        self._connected_function_ran = False
-        self.logger.debug(f'Callback "{callback.__name__}({args=}, {kwargs=})" connected to "{self.name}" signal')
+        self.__returnedValue_from_cb = defaultReturnValue
+        self.__connected_function_ran = False
+        self.__logger.debug(f'Callback "{callback.__name__}({args=}, {kwargs=})" connected to "{self.__name}" signal')
 
     def disconnect(self):
         """ Disconnects a callback from the signal """
         self._callback: Callable | None = None
         self.cb_args = tuple()
         self.cb_kwargs = dict()
-        self.logger.debug(f'Callback disconnected from "{self.name}" signal')
+        self.__logger.debug(f'Callback disconnected from "{self.__name}" signal')
 
     def emit(self, *args: Any, **kwargs: Any):
         """
@@ -98,17 +111,17 @@ class Signal:
 
         # Run
         if self._callback:
-            self._connected_function_ran = False
-            if self.threaded:
+            self.__connected_function_ran = False
+            if self.__threaded:
                 from .decorator import run_threaded
                 run_threaded(
-                    daemon=self.daemon,
+                    daemon=self.__daemon,
                     name=f'Signal Thread {self._callback.__name__}',
-                    logger=self.logger,
+                    logger=self.__logger,
                 )(self._callback)(*_args, **_kwargs)
             else:
-                self.returnedValue_from_cb = self._callback(*_args, **_kwargs)
-            self._connected_function_ran = True
+                self.__returnedValue_from_cb = self._callback(*_args, **_kwargs)
+            self.__connected_function_ran = True
 
     async def emit_async(self, *args: Any, **kwargs: Any):
         """
@@ -128,9 +141,9 @@ class Signal:
 
         # Run
         if self._callback:
-            self._connected_function_ran = False
-            self.returnedValue_from_cb = await self._callback(*args, **kwargs)
-            self._connected_function_ran = True
+            self.__connected_function_ran = False
+            self.__returnedValue_from_cb = await self._callback(*args, **kwargs)
+            self.__connected_function_ran = True
 
     def get_returned_value(self, returnAfterComplete: bool=False):
         """
@@ -145,10 +158,10 @@ class Signal:
         """
         if returnAfterComplete:
             while True:
-                if self._connected_function_ran:
+                if self.__connected_function_ran:
                     break
                 time.sleep(1)
-        return self.returnedValue_from_cb
+        return self.__returnedValue_from_cb
 
     async def get_returned_value_async(self, returnAfterComplete: bool=False):
         """
@@ -164,7 +177,7 @@ class Signal:
         """
         if returnAfterComplete:
             while True:
-                if self._connected_function_ran:
+                if self.__connected_function_ran:
                     break
                 await asyncio.sleep(1)
-        return self.returnedValue_from_cb
+        return self.__returnedValue_from_cb
