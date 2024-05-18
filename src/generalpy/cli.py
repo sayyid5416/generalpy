@@ -25,8 +25,8 @@ class Attrib:
     """
 
     def __init__(self, path:str) -> None:
-        self.path = path
-        self.attrsType = {
+        self.__path = path
+        self.__attrsType = {
             'A':False,
             'H':False,
             'I':False,
@@ -39,6 +39,11 @@ class Attrib:
         return generate_repr_str(
             self, 'path'
         )
+    
+    @property
+    def path(self):
+        """ Path of the file/folder for which attributes are being modified """
+        return self.__path
     
     def set(
         self,
@@ -54,7 +59,7 @@ class Attrib:
         currentAttrs = self.get()
         for x, y in zip(
             [a, h, i, r, s],
-            self.attrsType
+            self.__attrsType
         ):                                                                          # Collect: if not already set
             if x == True and not currentAttrs[y]:
                 newAttrs.append(f'+{y}')
@@ -64,7 +69,7 @@ class Attrib:
         # Set attributes
         if newAttrs:
             newAttrs.insert(0,'attrib')
-            newAttrs.append(self.path)
+            newAttrs.append(self.__path)
             return subprocess.run(
                 newAttrs, 
                 creationflags=subprocess.CREATE_NO_WINDOW
@@ -75,7 +80,7 @@ class Attrib:
         # Get attribs for path
         output = subprocess.check_output(
             [
-                'attrib', self.path
+                'attrib', self.__path
             ], 
             universal_newlines=True, 
             creationflags=subprocess.CREATE_NO_WINDOW
@@ -83,7 +88,7 @@ class Attrib:
         currentAttribs = output[:9].replace(' ', '')
         
         # Parse the attribs
-        attribs = dict(self.attrsType)
+        attribs = dict(self.__attrsType)
         for i in currentAttribs:
             if i in attribs:
                 attribs[i] = True
@@ -121,12 +126,12 @@ class ICACLS:
         logger: Logger | None = None
     ):
         # Args
-        self.path = path
-        self.accountName = accountName
-        self.logger = logger or _get_basic_logger()
+        self.__path = path
+        self.__accountName = accountName
+        self.__logger = logger or _get_basic_logger()
         
         # Data
-        self.perms = ['N', 'F', 'M', 'RX', 'R', 'W', 'D']
+        self.__perms = ['N', 'F', 'M', 'RX', 'R', 'W', 'D']
     
     def __repr__(self) -> str:
         from .general import generate_repr_str
@@ -134,24 +139,43 @@ class ICACLS:
             self, 'path', 'accountName', 'logger'
         )
     
+    @property
+    def path(self):
+        """ Path of the file/folder for which permissions are being modified """
+        return self.__path
+    
+    @property
+    def accountName(self):
+        """ Name of the account for which permissions are being modified """
+        return self.__accountName
+    
+    @property
+    def logger(self):
+        """ `logging.Logger` being used for logging """
+        return self.__logger
+    
+    @logger.setter
+    def logger(self, value: Logger):
+        self.__logger = value
+    
     def _subprocessWrapper(
         self, 
         act: Literal['get', 'grant', 'deny', 'remove'], 
         perm: str | None = None
     ):
         """ Wrapper """
-        if perm in self.perms or act in ['get', 'remove']:
+        if perm in self.__perms or act in ['get', 'remove']:
             # Permissions to set
             if act in ['get', 'remove']: 
                 perm = None
             permToSet = f':(OI)(CI){perm}' if perm else ''
 
             # Command to run
-            args = ['icacls', self.path]
+            args = ['icacls', self.__path]
             if act != 'get':
                 args += [
                     f'/{act}',
-                    f'{self.accountName}{permToSet}'
+                    f'{self.__accountName}{permToSet}'
                 ]
             
             # Process
@@ -163,9 +187,9 @@ class ICACLS:
                     creationflags=subprocess.CREATE_NO_WINDOW
                 )
             except subprocess.CalledProcessError as e:
-                self.logger.error(f'{e}')
+                self.__logger.error(f'{e}')
         else:
-            self.logger.info(f'Permission you want to set is not allowed ({perm})')
+            self.__logger.info(f'Permission you want to set is not allowed ({perm})')
 
     def denyPermissions(self, perm:str='F'):
         """ Deny Permissions """ 
@@ -174,7 +198,7 @@ class ICACLS:
         
         # Check if already set
         for i, v  in self.getInfo().items():
-            if self.accountName in i and permToCheck in v:
+            if self.__accountName in i and permToCheck in v:
                 return
         
         # If not running
@@ -192,7 +216,7 @@ class ICACLS:
         infoDict :dict[str, str] = {}
         if output:
             # Remove useless items
-            output = output.removeprefix(self.path)
+            output = output.removeprefix(self.__path)
             output = output.replace('  ', '').strip()
             
             # Data structure
