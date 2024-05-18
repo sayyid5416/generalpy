@@ -98,8 +98,10 @@
   - `first_capital`: Make first letter capital without changing any other thing.
   - `format_bytes`: Returns human readable formats from bytes.
   - `generate_repr_str`: Returns a suitable string for `__repr__` method of classes.
+  - `get_adjusted_color`: Adjusts the brightness of a color in hexadecimal format.
   - `get_digit_from_text`: Returns the digit from the first occurrence of `(digit)`.
   - `get_first_non_alphabet`: Returns the first non-alphabet character from string.
+  - `get_installed_fonts`: Returns a list of fonts installed on Windows. (windows_only)
   - `is_python`: Returns `True` if current running app is `python`.
   - `punctuate`: Adds punctuation after string, if not present.
   - `remove_extra_spaces`: Removed extra spaces between words.

@@ -2,15 +2,17 @@
 This module contains general classes and methods
 """
 import ctypes
-from pathlib import Path
 import re
-from string import punctuation
 import sys
+import winreg
+from pathlib import Path
+from string import punctuation
 from typing import Any, Iterable
 
 # This import could not be done inside any function.
 # So, be aware of circular imports.
 from .decorator import platform_specific
+
 
 
 
@@ -64,6 +66,42 @@ def generate_repr_str(classInst, *args: str):
 
 
 
+def get_adjusted_color(hex_color, percentageDark: int = None, percentageBright: int = None):
+    """
+    Adjusts the brightness of a color in hexadecimal format.
+
+    Args:
+        hex_color (str): The color in hexadecimal format (e.g., '#RRGGBB').
+        percentageDark (int, optional): The percentage by which to darken the color.
+        percentageBright (int, optional): The percentage by which to brighten the color.
+
+    Returns:
+        str: The adjusted color in hexadecimal format.
+    """
+    # Convert hex to RGB
+    hex_color = hex_color.lstrip('#')
+    r, g, b = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+    
+    # Adjust color if either percentageDark or percentageBright is provided
+    if percentageDark is not None:
+        adjustment = 1 - (percentageDark / 100)
+    elif percentageBright is not None:
+        adjustment = 1 + (percentageBright / 100)
+    else:
+        return '#' + hex_color
+    
+    # Calculate adjusted color
+    r_adjusted = max(0, min(255, int(r * adjustment)))
+    g_adjusted = max(0, min(255, int(g * adjustment)))
+    b_adjusted = max(0, min(255, int(b * adjustment)))
+    
+    # Convert RGB to hex
+    adjusted_hex = '#{:02x}{:02x}{:02x}'.format(r_adjusted, g_adjusted, b_adjusted)
+    
+    return adjusted_hex
+
+
+
 def get_digit_from_text(text: str) -> int | None:
     """
     Returns the digit from the first occuurance of `(digit)`. 
@@ -89,6 +127,36 @@ def get_first_non_alphabet(string: str, ignoredChars: list[str] | None = None) -
         if not char.isalpha() and char not in ignoredChars:
             return char
     return ' '
+
+
+
+@platform_specific('win32')
+def get_installed_fonts(sanitize: bool=True):
+    """ Returns a list of fonts installed on Windows 
+    - sanitize: Remove Bold, Italic etc
+    """
+    fonts_key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts")
+    installed_fonts = []
+    try:
+        index = 0
+        while True:
+            font_name, *_ = winreg.EnumValue(fonts_key, index)
+            
+            # sanitize
+            if sanitize:
+                font_name = font_name.strip().split(' (')[0]
+                font_name = font_name.strip().split(' &')[0]
+                for i in ['Light', 'Medium', 'Regular', 'Semilight', 'Bold', 'Italic', 'ExtraBold']:
+                    font_name = font_name.replace(f' {i}', '').strip()
+                font_name = font_name.strip()
+
+            # Add font
+            if font_name not in installed_fonts:
+                installed_fonts.append(font_name)
+            index += 1
+    except OSError:
+        pass
+    return installed_fonts
 
 
 
@@ -240,7 +308,8 @@ def sliced_list(mainList: list[Any], n: int = 3):
 
 
 
-
+c = '#141414'
+print('---------', get_adjusted_color(c, -1000), '--------')
 
 
 
