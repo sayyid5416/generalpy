@@ -27,10 +27,10 @@ from .database import (
 from .decorator import (
     combine_single_items,
     conditional,
+    log_it,
     platform_specific,
     retry_support,
     run_threaded,
-    time_it
 )
 
 from .exceptions import (

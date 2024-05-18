@@ -14,6 +14,9 @@ from ._utils import _get_basic_logger
 
 
 
+
+
+
 def combine_single_items(func):
     """
     Decorator to combine item of sublists (which contain only one item) in a single sublist.
@@ -69,6 +72,31 @@ def conditional(condition: bool, defaultValue: Any = None):
         else:
             return wrapper_sync
         
+    return top_level_wrapper
+
+
+
+def log_it(logger: logging.Logger | None = None):
+    """
+    Decorator to log when the decorated function runs and what it returns
+    
+    - `logger`: for logging purposes (if not provided, default logger will be used)
+    """
+    
+    logger = logger or _get_basic_logger()
+    
+    def top_level_wrapper(func):
+        def wrapper(*args, **kwargs):
+            # Function
+            t1 = time.perf_counter()
+            retVal = func(*args, **kwargs)
+            t2 = time.perf_counter()
+
+            # Log
+            logger.info(f'[LOG_IT] "{func.__name__}" ran and returned "{retVal}" [Time taken: {t2 - t1} seconds]')
+
+            return retVal
+        return wrapper
     return top_level_wrapper
 
 
@@ -233,17 +261,3 @@ def run_threaded(
     
     return top_level_wrapper
 
-
-
-def time_it(func):
-    """
-    Decorator to print time taken by the decorated function
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        start = time.perf_counter()
-        rv = func(*args, **kwargs)
-        end = time.perf_counter()
-        print(f'[Time taken: {end - start} seconds]')
-        return rv
-    return wrapper
