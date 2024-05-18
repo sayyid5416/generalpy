@@ -45,33 +45,33 @@ class CustomLogging:
         initialMsg: str = ''
     ):
         # Args
-        self.loggerName = loggerName if loggerName else __name__
-        self.loggingLevel = loggingLevel
-        self.allLogsFilePath = allLogsFilePath
-        self.errorLogsFilePath = errorLogsFilePath
-        self.timeZone = timeZone
-        self.compactStreamLogs = compactStreamLogs
-        self.initialMsg = initialMsg
+        self.__loggerName = loggerName if loggerName else __name__
+        self.__loggingLevel = loggingLevel
+        self.__allLogsFilePath = allLogsFilePath
+        self.__errorLogsFilePath = errorLogsFilePath
+        self.__timeZone = timeZone
+        self.__compactStreamLogs = compactStreamLogs
+        self.__initialMsg = initialMsg
         
         # Variables
-        self.logger = self._initiate_logger()                                                   # Logger
-        self.handlers: set[logging.Handler] = set()                                             # List of all available handlers
+        self.__logger = self._initiate_logger()                                                   # Logger
+        self.__handlers: set[logging.Handler] = set()                                             # List of all available handlers
         self.__compact_formatter = self._get_compact_formatter()
         self.__full_formatter = self._get_full_formatter()
         
         # Logging
         self._initiate_stream_logging()
-        if self.allLogsFilePath:
+        if self.__allLogsFilePath:
             self._initiate_file_logging(
-                self.allLogsFilePath, logging.INFO
+                self.__allLogsFilePath, logging.INFO
             )
-        if self.errorLogsFilePath:
+        if self.__errorLogsFilePath:
             self._initiate_file_logging(
-                self.errorLogsFilePath, logging.ERROR
+                self.__errorLogsFilePath, logging.ERROR
             )
-        if self.initialMsg:
+        if self.__initialMsg:
             self.raw_logging(
-                self.initialMsg, True, True
+                self.__initialMsg, True, True
             )
 
     def __repr__(self) -> str:
@@ -87,10 +87,65 @@ class CustomLogging:
             'initialMsg'
         )
 
+
+    ## ----------------------- Properties ----------------------- ##
+    @property
+    def logger(self):
+        """ main `logging.Logger` to be used for logging """
+        return self.__logger
+    
+    @property
+    def timeZone(self):
+        """ timezone for the logging time """
+        return self.__timeZone
+    
+    @property
+    def compactStreamLogs(self):
+        """ Are stream logs compact type """
+        return self.__compactStreamLogs
+    
+    @property
+    def allLogsFilePath(self):
+        """ Path of the file which contains all logs """
+        return self.__allLogsFilePath
+    
+    @property
+    def errorLogsFilePath(self):
+        """ Path of the file which contains error logs """
+        return self.__errorLogsFilePath
+    
+    
+    ## ----------------------- Main functions ----------------------- ##
+    def close_logging_handlers(self):
+        """ Close all available handlers: All file handlers & stream handler """
+        for i in self.__handlers:
+            i.close()
+
+    def raw_logging(self, msg:str, toAllLogsFile=False, toErrorLogsFile=False):
+        """ 
+        Write Raw `msg` to appropriate logs (along with `terminal`) , without any formatting
+        - toAllLogsFile : If `True`, `msg` would be logged to `allLogsFilePath` too (if setted in constructor) .
+        - toAllLogs : If `True`, `msg` would be logged to `errorLogsFilePath` too (if setted in constructor) .
+        """
+        def write_to_file(filePath:str):
+            with open(filePath, 'a') as f:
+                f.write(
+                    f'{msg}\n'
+                )
+        
+        # Logging
+        print(msg)
+        if toAllLogsFile and self.__allLogsFilePath:
+            write_to_file(self.__allLogsFilePath)
+        if toErrorLogsFile and self.__errorLogsFilePath:
+            write_to_file(self.__errorLogsFilePath)
+
+
+    ## ----------------------- Internals ----------------------- ##
     def _add_handler(self, handler: logging.Handler):
         """ Adds `handler` to `Logger` """
-        self.logger.addHandler(handler)
-        self.handlers.add(handler)
+        self.__logger.addHandler(handler)
+        self.__handlers.add(handler)
     
     def _get_compact_formatter(self):
         """ Returns compact `Formatter` after initiating it for all levels """
@@ -101,7 +156,7 @@ class CustomLogging:
                 logging.WARNING: f'[!] {self.compactFormat}',
                 logging.ERROR: f'[x] {self.compactFormat}',
             },
-            timeZone=self.timeZone
+            timeZone=self.__timeZone
         )
 
     def _get_full_formatter(self):
@@ -113,8 +168,8 @@ class CustomLogging:
                 logging.WARNING: f'[!] {self.fullFormat}',
                 logging.ERROR: f'[x] {self.fullFormat}',
             },
-            datefmt=f"%Y-%m-%d %I:%M:%S %p ({self.timeZone})",
-            timeZone=self.timeZone
+            datefmt=f"%Y-%m-%d %I:%M:%S %p ({self.__timeZone})",
+            timeZone=self.__timeZone
         )
     
     def _initiate_file_logging(self, fileLocation:str, loggingLevel, formatter: logging.Formatter | None = None):
@@ -136,47 +191,22 @@ class CustomLogging:
     def _initiate_logger(self):
         """ Returns `Logger` after initiating it """
         return logging.Logger(
-            self.loggerName,
-            self.loggingLevel
+            self.__loggerName,
+            self.__loggingLevel
         )
     
     def _initiate_stream_logging(self):
         """ Initiates logs streaming to Terminal
-        - `Formatter` is based on `self.compactStreamLogs`
+        - `Formatter` is based on `self.__compactStreamLogs`
         """
         streamHand = logging.StreamHandler()
         streamHand.setFormatter(
-            self.__compact_formatter if self.compactStreamLogs else self.__full_formatter
+            self.__compact_formatter if self.__compactStreamLogs else self.__full_formatter
         )
         self._add_handler(streamHand)
 
-    def close_logging_handlers(self):
-        """ Close all available handlers: All file handlers & stream handler """
-        for i in self.handlers:
-            i.close()
 
-    def get_logger(self):
-        """ Returns `logging.Logger` object """
-        return self.logger
 
-    def raw_logging(self, msg:str, toAllLogsFile=False, toErrorLogsFile=False):
-        """ 
-        Write Raw `msg` to appropriate logs (along with `terminal`) , without any formatting
-        - toAllLogsFile : If `True`, `msg` would be logged to `allLogsFilePath` too (if setted in constructor) .
-        - toAllLogs : If `True`, `msg` would be logged to `errorLogsFilePath` too (if setted in constructor) .
-        """
-        def write_to_file(filePath:str):
-            with open(filePath, 'a') as f:
-                f.write(
-                    f'{msg}\n'
-                )
-        
-        # Logging
-        print(msg)
-        if toAllLogsFile and self.allLogsFilePath:
-            write_to_file(self.allLogsFilePath)
-        if toErrorLogsFile and self.errorLogsFilePath:
-            write_to_file(self.errorLogsFilePath)
 
 
 
@@ -192,12 +222,12 @@ class LevelFormatter(logging.Formatter):
         self.formats = formats
         self.args = args
         self.kwargs = kwargs
-        self.timeZone = timeZone
+        self.__timeZone = timeZone
 
         # Function
         if 'fmt' in self.kwargs:
             raise ValueError('Keyword argument "fmt" deprecated, use "formats"')
-        self.set_time_zone(self.timeZone)
+        self.set_time_zone(self.__timeZone)
         self.formatters = sorted(
             (
                 levelno,
