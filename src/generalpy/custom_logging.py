@@ -219,36 +219,41 @@ class LevelFormatter(logging.Formatter):
     def __init__(self, formats: dict[int, str], timeZone: str = 'Asia/Kolkata', *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Args
-        self.formats = formats
-        self.args = args
-        self.kwargs = kwargs
+        self.__formats = formats
+        self.__args = args
+        self.__kwargs = kwargs
         self.__timeZone = timeZone
 
         # Function
-        if 'fmt' in self.kwargs:
+        if 'fmt' in self.__kwargs:
             raise ValueError('Keyword argument "fmt" deprecated, use "formats"')
         self.set_time_zone(self.__timeZone)
-        self.formatters = sorted(
+        self.__formatters = sorted(
             (
                 levelno,
                 logging.Formatter(
-                    fmt, **self.kwargs
+                    fmt, **self.__kwargs
                 )
-            ) for levelno, fmt in self.formats.items()
+            ) for levelno, fmt in self.__formats.items()
         )
     
     def __repr__(self) -> str:
         from .general import generate_repr_str
         return generate_repr_str(self, 'formats', 'timeZone', 'args', 'kwargs')
     
+    @property
+    def timeZone(self):
+        """ Timezone """
+        return self.__timeZone
+    
     def format(self, record: logging.LogRecord) -> str:
         """ Sets formatting """
         idx = bisect(
-            a=self.formatters,
+            a=self.__formatters,
             x=(record.levelno,),                                                   # Comma: To make it a tuple, instead of int
-            hi=len(self.formatters) - 1
+            hi=len(self.__formatters) - 1
         )
-        levelno, formatter = self.formatters[idx]
+        levelno, formatter = self.__formatters[idx]
         return formatter.format(
             record
         )
