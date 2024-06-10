@@ -8,14 +8,14 @@ You can import classes and methods directly from this library, like `from genera
 or from their specific modules like `from generalpy.custom_logging import CustomLogging`
 """
 
-from .ctypes import (
-    set_app_user_model_id
-)
-
 from .cli import (
     Attrib,
     ICACLS,
     TaskList
+)
+
+from .ctypes import (
+    set_app_user_model_id
 )
 
 from .custom_logging import (
