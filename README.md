@@ -12,7 +12,7 @@
 
 
 ### 💠 `Attrib` class _(windows OS only)_
-  - Handles the `attrib` command from windows OS.
+  - Handles the `attrib` command.
   - To set/modify/remove the `A/H/I/R/S` attributes for files/folders.
   - Use `attrib /?` in CMD for more info.
 
@@ -35,7 +35,7 @@
 
 
 ### 💠 `ICACLS` class _(windows OS only)_
-  - Handles functions related to `icacls` command from windows OS.
+  - Handles functions related to `icacls` command.
   - To set/modify/remove the permissions for files/folders.
   - Use `icacls /?` in CMD for more info.
 
@@ -64,7 +64,7 @@
 
 
 ### 💠 `TaskList` class _(windows OS only)_
-  - Handles functions related to `tasklist` command of windows OS.
+  - Handles functions related to `tasklist` command.
   - Get running tasks/executables.
   - Check if an exe is running or not, or how many of it's instances are running.
 
@@ -72,6 +72,12 @@
 ---
 
 
+### 💠 `ctypes` module
+  This module contains functions and methods related to ctypes
+  - `run_ShellExecuteW`: Runs `ShellExecuteW` command. _(windows_only)_
+  - `running_as_admin`: Checks if current app is running as admin. _(windows_only)_
+  - `set_app_user_model_id`: Sets the App User Model ID for the current process. _(windows_only)_
+  
 ### 💠 `decorator` module
   This module contains decorators
   - `combine_single_items`: Combine item of sublists _(which contain only one item)_ into a single sublist.
@@ -88,9 +94,9 @@
   - `delete_files_by_prefix_suffix`: Deletes all files in directory and its subdirectories according to prefix/suffix in their name.
   - `get_new_path`: Returns new filePath for files _(which do not exist)_ by appending (1/2/3/..).
   - `get_random_file_path`: Returns a random path of a file _(which do not exist)_ in parentDirectory.
-  - `get_unsupported_file_path_chars`: Returns A list of characters which can't used in file names (windows_only)
+  - `get_unsupported_file_path_chars`: Returns A list of characters which can't used in file names _(windows_only)_
   - `read_file_chunks`: Read file and returns possible data chunk by chunk.
-  - `sanitised_filename`: Sanitize filename by replacing unsupported or non-printable characters (for windows).
+  - `sanitised_filename`: Sanitize filename by replacing unsupported or non-printable characters. _(windows_only)_
 
 
 ### 💠 `general` module
@@ -101,13 +107,12 @@
   - `get_adjusted_color`: Adjusts the brightness of a color in hexadecimal format.
   - `get_digit_from_text`: Returns the digit from the first occurrence of `(digit)`.
   - `get_first_non_alphabet`: Returns the first non-alphabet character from string.
-  - `get_installed_fonts`: Returns a list of fonts installed on Windows. (windows_only)
+  - `get_installed_fonts`: Returns a list of fonts installed. _(windows_only)_
   - `is_python`: Returns `True` if current running app is `python`.
   - `punctuate`: Adds punctuation after string, if not present.
   - `remove_extra_spaces`: Removed extra spaces between words.
   - `replace_html_tags`: Replace html tags from a string.
   - `replace_multiple_chars`: Replace multiple characters from a string.
-  - `set_app_user_model_id`: Sets the App User Model ID for the current process on windows OS.
   - `similarized`: Takes a list of strings and returns a list of sublists of similar-strings.
   - `sliced_list`: Slice a list into a list of sublists, where each sublist contains specific no. of items.
   - class `Calender_Class`: Class Containing functions related to Calendar

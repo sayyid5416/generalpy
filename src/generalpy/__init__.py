@@ -15,7 +15,9 @@ from .cli import (
 )
 
 from .ctypes import (
-    set_app_user_model_id
+    run_ShellExecuteW,
+    running_as_admin,
+    set_app_user_model_id,
 )
 
 from .custom_logging import (
