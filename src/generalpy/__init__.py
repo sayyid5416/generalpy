@@ -8,6 +8,10 @@ You can import classes and methods directly from this library, like `from genera
 or from their specific modules like `from generalpy.custom_logging import CustomLogging`
 """
 
+from .ctypes import (
+    set_app_user_model_id
+)
+
 from .cli import (
     Attrib,
     ICACLS,
@@ -60,7 +64,6 @@ from .general import (
     remove_extra_spaces,
     replace_html_tags,
     replace_multiple_chars,
-    set_app_user_model_id,
     similarized,
     sliced_list,
     Calender_Class

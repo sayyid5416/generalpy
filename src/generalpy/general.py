@@ -1,7 +1,6 @@
 """
 This module contains general classes and methods
 """
-import ctypes
 import re
 import sys
 import winreg
@@ -245,20 +244,6 @@ def replace_multiple_chars(
                 i[0], i[1], count
             )
     return text
-
-
-
-@platform_specific('win32')
-def set_app_user_model_id(appID: str):
-    """
-    Sets the App User Model ID for the current process. It is:
-    - setted using `SetCurrentProcessExplicitAppUserModelID` windows API.
-    - a string that identifies a specific application to the Windows operating system.
-    - used by Windows to group windows and taskbar items for a specific application, 
-    as well as to launch and activate the application.
-    """
-    ctypes.windll.shell32.\
-        SetCurrentProcessExplicitAppUserModelID(appID)
 
 
 
