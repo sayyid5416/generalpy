@@ -50,23 +50,24 @@ def format_bytes(size: float):
 
 
 
-def format_dict(data: dict, indent: int = 4, modifyKeys: bool = True, initialIndent: int = 0):
+def format_dict(data: dict, indent: int = 4, keyPrefix: str = None, modifyKeys: bool = True, initialIndent: int = 0):
     """
     Converts dict into a human-readable format.
     
     Args:
-        data: The dictionary to be formatted.
-        indent: The number of spaces for indentation.
-        modifyKeys: Whether to modify keys text to make them more readable.
-        initialIndent: The initial indentation level.
+        - `data`: The dictionary to be formatted.
+        - `indent`: The number of spaces for indentation.
+        - `keyPrefix`: Prefix to be added before keys.
+        - `modifyKeys`: Whether to modify keys text to make them more readable.
+        - `initialIndent`: The initial indentation level.
 
     """
     
     def format_key(item: str) -> str:
         """ Format dictionary keys into a more readable form. """
         if modifyKeys:
-            return item.replace("_", " ").title()
-        return item
+            item = item.replace("_", " ").title()
+        return f'{keyPrefix}{item}'
 
     formattedString = ""
     for key, value in data.items():
