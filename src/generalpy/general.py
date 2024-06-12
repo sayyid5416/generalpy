@@ -3,7 +3,6 @@ This module contains general classes and methods
 """
 import re
 import sys
-import winreg
 from pathlib import Path
 from string import punctuation
 from typing import Any, Iterable
@@ -12,7 +11,7 @@ from typing import Any, Iterable
 # So, be aware of circular imports.
 from .decorator import platform_specific
 
-
+# winreg is imported in functions, because it was causing issues on linux machines
 
 
 
@@ -172,6 +171,7 @@ def get_installed_fonts(sanitize: bool=True):
     """ Returns a list of fonts installed on Windows 
     - sanitize: Remove Bold, Italic etc
     """
+    import winreg
     fonts_key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts")
     installed_fonts = []
     try:
