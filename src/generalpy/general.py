@@ -67,6 +67,7 @@ def format_dict(data: dict, indent: int = 4, keyPrefix: str = None, modifyKeys: 
         """ Format dictionary keys into a more readable form. """
         if modifyKeys:
             item = item.replace("_", " ").title()
+            item = f'<b>{item}</b>'
         return f'{keyPrefix}{item}' if keyPrefix else item
 
     formattedString = ""
