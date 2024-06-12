@@ -103,6 +103,7 @@
   This module contains general methods
   - `first_capital`: Make first letter capital without changing any other thing.
   - `format_bytes`: Returns human readable formats from bytes.
+  - `format_dict`: Returns human readable formats from dict.
   - `generate_repr_str`: Returns a suitable string for `__repr__` method of classes.
   - `get_adjusted_color`: Adjusts the brightness of a color in hexadecimal format.
   - `get_digit_from_text`: Returns the digit from the first occurrence of `(digit)`.

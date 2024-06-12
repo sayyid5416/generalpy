@@ -50,6 +50,41 @@ def format_bytes(size: float):
 
 
 
+def format_dict(data: dict, indent: int = 4, modifyKeys: bool = True, initialIndent: int = 0):
+    """
+    Converts dict into a human-readable format.
+    
+    Args:
+        data: The dictionary to be formatted.
+        indent: The number of spaces for indentation.
+        modifyKeys: Whether to modify keys text to make them more readable.
+        initialIndent: The initial indentation level.
+
+    """
+    
+    def format_key(item: str) -> str:
+        """ Format dictionary keys into a more readable form. """
+        if modifyKeys:
+            return item.replace("_", " ").title()
+        return item
+
+    formattedString = ""
+    for key, value in data.items():
+        if isinstance(value, dict):
+            formattedString += f"{' ' * initialIndent}{format_key(key)}:\n"
+            formattedString += format_dict(
+                value,
+                indent=indent,
+                modifyKeys=modifyKeys,
+                initialIndent=initialIndent + indent
+            )
+        else:
+            formattedString += f"{' ' * initialIndent}{format_key(key)}: {value}\n"
+    
+    return formattedString
+
+
+
 def generate_repr_str(classInst, *args: str):
     """
     Returns a suitable string for `__repr__` method of classes.

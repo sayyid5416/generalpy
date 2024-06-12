@@ -56,6 +56,7 @@ from .files import (
 from .general import (
     first_capital,
     format_bytes,
+    format_dict,
     generate_repr_str,
     get_adjusted_color,
     get_digit_from_text,
