@@ -11,6 +11,10 @@
 ---
 
 
+### 💠 `Api_Call` class
+  - Handles API call in easy way
+
+
 ### 💠 `Attrib` class _(windows OS only)_
   - Handles the `attrib` command.
   - To set/modify/remove the `A/H/I/R/S` attributes for files/folders.
