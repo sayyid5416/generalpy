@@ -94,10 +94,7 @@ class Api_Call:
 
     async def apiResponse_async(self):
         """ (ASYNC) Response from the API """
-        import aiohttp
-        async with aiohttp.ClientSession() as session:
-            async with session.get(self.api_url) as response:
-                return response
+        return await self._get_async_api_response(self.apiUrl)
 
     async def apiResponseJson_async(self):
         """ (ASYNC) JSON format of response from API """
@@ -129,3 +126,11 @@ class Api_Call:
             'error': 'Invalid data',
             'detail': 'Unable to parse the return format. It seems like it is not a JSON response.'
         }
+
+    @staticmethod
+    async def _get_async_api_response(url: str):
+        """ (ASYNC) Response from the API """
+        import aiohttp
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                return response
