@@ -127,7 +127,6 @@ class Api_Call:
             'detail': 'Unable to parse the return format. It seems like it is not a JSON response.'
         }
 
-    @staticmethod
     async def _get_async_api_response(url: str):
         """ (ASYNC) Response from the API """
         import aiohttp
