@@ -92,44 +92,50 @@ class Api_Call:
             keyPrefix='• '
         )
 
-    async def apiResponse_async(self):
-        """ (ASYNC) Response from the API """
-        return await self._get_async_api_response(self.apiUrl)
-
-    async def apiResponseJson_async(self):
+    
+    ## ----------------------------------------- Async ----------------------------------------- ##
+    @property
+    async def async_apiResponseJson(self):
         """ (ASYNC) JSON format of response from API """
         try:
-            response = await self.apiResponse_async()
-            return await response.json()
+            return await self._async_get_response_json_from_url(self.apiUrl)
         except Exception as e:
             self.__logger.debug(e)
-            return self._return_invalid_data()
+            return await self._async_return_invalid_data()
 
-    async def get_response_raw_str_async(self):
+    async def async_get_response_raw_str(self):
         """ (ASYNC) Get str of properly formatted API response """
-        responseJson = await self.apiResponseJson_async()
+        responseJson = await self.async_apiResponseJson
         return json.dumps(responseJson, indent=4)
 
-    async def get_response_simple_str_async(self, data: dict | None = None):
+    async def async_get_response_simple_str(self, data: dict | None = None):
         """
         (ASYNC) Get str of properly formatted simplistic API response
         - if `data` is provided -> It will be formatted and returned.
         - otherwise -> data will be taken from API
         """
         if data is None:
-            data = await self.apiResponseJson_async()
+            data = await self.async_apiResponseJson
         return format_dict(data, 5, keyPrefix='• ')
 
+
+    ## ----------------------------------------- Internals ----------------------------------------- ##
     def _return_invalid_data(self):
         """ Returns invalid data dict """
         return {
+            'code': '404',
             'error': 'Invalid data',
             'detail': 'Unable to parse the return format. It seems like it is not a JSON response.'
         }
+    
+    async def _async_return_invalid_data(self):
+        """ Returns invalid data dict """
+        return self._return_invalid_data()
 
-    async def _get_async_api_response(url: str):
-        """ (ASYNC) Response from the API """
+    @staticmethod
+    async def _async_get_response_json_from_url(url: str):
+        """ (ASYNC) Response JSON from the API """
         import aiohttp
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
-                return response
+                return await response.json()
